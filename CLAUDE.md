@@ -75,6 +75,7 @@ npm run format          # Format code with Prettier
 - **Testing**: Vitest (unit) + Playwright (e2e) with browser testing support
 - **Build**: Vite
 - **Deployment**: adapter-auto (supports multiple platforms)
+- **Package manager**: Pnpm
 
 ## Code Organization
 
