@@ -1,9 +1,9 @@
 /**
  * Grid Helper Utilities
  * 
- * A map-based responsive CSS Grid system with flexible breakpoint configuration.
- * Uses Sass maps for cleaner breakpoint management and provides mixins for creating
- * responsive grid containers with automatic border handling.
+ * A hybrid map-based responsive CSS Grid system that combines the structure of Sass maps
+ * with list values for flexible grid template definitions. Provides mixins for creating
+ * responsive grid containers with automatic border handling and breakpoint management.
  */
 
 @use './theme-variables.scss' as *;
@@ -13,6 +13,17 @@
 // Responsive breakpoint definitions
 $breakpoints: (xs: 640px, sm: 768px, md: 1024px, lg: 1280px, xl: 1536px);
 
+/**
+ * Joins a list of values into a string with a specified separator.
+ * Used internally to convert grid template lists into CSS strings.
+ * 
+ * @param {List} $list - The list of values to join
+ * @param {String} $sep - The separator to use between values
+ * @return {String} The joined string
+ * 
+ * @example
+ *   join((1fr, 2fr, 1fr), " ") // Returns "1fr 2fr 1fr"
+ */
 @function join($list, $sep) {
 	$s: "";
 	$result: "";
@@ -44,13 +55,16 @@ $breakpoints: (xs: 640px, sm: 768px, md: 1024px, lg: 1280px, xl: 1536px);
 
 /**
  * Creates a responsive CSS Grid container with map-based breakpoint configurations.
+ * Each map value should be a list defining the grid template for that breakpoint.
  * 
- * @param {Map} $columns - Map of column counts for each breakpoint (default, xs, sm, md, lg, xl)
- * @param {Map} $rows - Map of row counts for each breakpoint (default, xs, sm, md, lg, xl)
+ * @param {Map} $columns - Map of grid-template-columns lists for each breakpoint
+ *                        Format: (default: (1fr 2fr), sm: (repeat(3, 1fr)), ...)
+ * @param {Map} $rows - Map of grid-template-rows lists for each breakpoint
+ *                     Format: (default: (auto auto), sm: (1fr), ...)
  * 
  * @example
- *   $columns: (default: 1, sm: 2, md: 3, lg: 4);
- *   $rows: (default: 3, sm: 2, md: 1);
+ *   $columns: (default: (1fr), sm: (1fr 1fr), md: (1fr 2fr 1fr));
+ *   $rows: (default: (auto auto auto), sm: (auto auto), md: (1fr));
  *   @include grid-container($columns, $rows);
  */
 @mixin grid-container($columns, $rows) {
@@ -121,14 +135,16 @@ $breakpoints: (xs: 640px, sm: 768px, md: 1024px, lg: 1280px, xl: 1536px);
  * 
  * @param {Map} $pos - Map of position tuples for each breakpoint
  *                     Format: (default: (col-start row-start col-span row-span), sm: (...), ...)
- * @param {Map} $columns - Column counts map for each breakpoint (from grid-container)
- * @param {Map} $rows - Row counts map for each breakpoint (from grid-container)
+ * @param {Map} $columns - Grid template columns map (same structure as grid-container)
+ * @param {Map} $rows - Grid template rows map (same structure as grid-container)
  * @param {Length} $width - Border width (defaults to theme thick border)
  * @param {Color} $color - Border color (defaults to theme border color)
  * 
  * @example
  *   $positions: (default: (1 1 1 1), md: (1 1 2 1));
- *   @include grid-cell($positions, $grid-columns, $grid-rows);
+ *   $columns: (default: (1fr), md: (1fr 1fr));
+ *   $rows: (default: (auto auto), md: (1fr));
+ *   @include grid-cell($positions, $columns, $rows);
  */
 @mixin grid-cell(
 	$pos,
