@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@mindsmodern/design-primitives':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@supabase/ssr':
         specifier: ^0.6.1
         version: 0.6.1(@supabase/supabase-js@2.55.0)
@@ -344,6 +347,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.30':
     resolution: {integrity: sha512-GQ7Nw5G2lTu/BtHTKfXhKHok2WGetd4XYcVKGx00SjAk8GMwgJM3zr6zORiPGuOE+/vkc90KtTosSSvaCjKb2Q==}
+
+  '@mindsmodern/design-primitives@1.0.1':
+    resolution: {integrity: sha512-LEHJq49qKsMLJ4oaU9MunJV5nxqr3iA5ezigEj1Sc7lhFSaa35ilWJuaFSi0ivC+IimTF6kdeuMb1iKpnM5IeA==, tarball: https://npm.pkg.github.com/download/@mindsmodern/design-primitives/1.0.1/c24dc885b506ff93269e39cf7f3519e8eec6ffc8}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1790,6 +1796,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@mindsmodern/design-primitives@1.0.1': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
