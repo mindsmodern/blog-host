@@ -1,17 +1,29 @@
 /**
  * Grid Helper Utilities
  * 
- * A responsive CSS Grid system with flexible breakpoint-based layout control.
- * Provides mixins for creating responsive grid containers and positioning grid cells
- * across different screen sizes with automatic border management.
+ * A map-based responsive CSS Grid system with flexible breakpoint configuration.
+ * Uses Sass maps for cleaner breakpoint management and provides mixins for creating
+ * responsive grid containers with automatic border handling.
  */
 
 @use './theme-variables.scss' as *;
+@use 'sass:map';
 @use 'sass:list';
 
 // Responsive breakpoint definitions
-$breakpoint-names: xs, sm, md, lg, xl;
-$breakpoint-sizes: 640px, 768px, 1024px, 1280px, 1536px;
+$breakpoints: (xs: 640px, sm: 768px, md: 1024px, lg: 1280px, xl: 1536px);
+
+@function join($list, $sep) {
+	$s: "";
+	$result: "";
+
+	@each $str in $list {
+		$result: "#{$result}#{$s}#{$str}";
+		$s: $sep;
+	}
+
+	@return $result;
+}
 
 /**
  * Safely retrieves an item from a list at the specified index.
@@ -29,28 +41,46 @@ $breakpoint-sizes: 640px, 768px, 1024px, 1280px, 1536px;
 	@return $default;
 }
 
+
 /**
- * Creates a responsive CSS Grid container with breakpoint-specific column and row configurations.
+ * Creates a responsive CSS Grid container with map-based breakpoint configurations.
  * 
- * @param {List} $columns - List of column counts for each breakpoint (base, xs, sm, md, lg, xl)
- * @param {List} $rows - List of row counts for each breakpoint (base, xs, sm, md, lg, xl)
+ * @param {Map} $columns - Map of column counts for each breakpoint (default, xs, sm, md, lg, xl)
+ * @param {Map} $rows - Map of row counts for each breakpoint (default, xs, sm, md, lg, xl)
  * 
  * @example
- *   $columns: 1, 1, 2, 3, 4, 4;  // 1 col mobile, 2 col tablet, 3+ col desktop
- *   $rows: 3, 3, 2, 1, 1, 1;     // 3 rows mobile, fewer on larger screens
+ *   $columns: (default: 1, sm: 2, md: 3, lg: 4);
+ *   $rows: (default: 3, sm: 2, md: 1);
  *   @include grid-container($columns, $rows);
  */
 @mixin grid-container($columns, $rows) {
 	display: grid;
-	grid-template-columns: repeat(var(--col-num, list.nth($columns, 1)), 1fr);
-	grid-template-rows: repeat(list.nth($rows, 1), 1fr);
+	@if map.has-key($columns, 'default') and map.has-key($rows, 'default') {
+		grid-template-columns: #{join(map.get($columns, 'default'), " ")};
+		grid-template-rows: #{join(map.get($rows, 'default'), " ")};
+	}
 
-	@for $i from 1 through list.length($breakpoint-names) {
-		$size: list.nth($breakpoint-sizes, $i);
-		@media (min-width: $size) {
-			grid-template-columns: repeat(list.nth($columns, $i + 1), 1fr);
-			grid-template-rows: repeat(list.nth($rows, $i + 1), auto);
+	@each $key, $value in $columns {
+		@media (min-width: $value) {
+			grid-template-columns: #{join(map.get($columns, $key), " ")};
+			grid-template-rows: #{join(map.get($rows, $key), " ")};
 		}
+	}
+}
+
+/**
+ * Media query mixin for responsive design using breakpoint keys.
+ * 
+ * @param {String} $key - Breakpoint key from $breakpoints map (xs, sm, md, lg, xl)
+ * 
+ * @example
+ *   @include respond-to(md) {
+ *     font-size: 18px;
+ *   }
+ */
+@mixin respond-to($key) {
+	@media (min-width: map.get($breakpoints, $key)) {
+		@content
 	}
 }
 
@@ -86,19 +116,18 @@ $breakpoint-sizes: 640px, 768px, 1024px, 1280px, 1536px;
 }
 
 /**
- * Positions a grid cell responsively across different breakpoints with automatic border management.
+ * Positions a grid cell responsively using maps with automatic border management.
  * Each cell can have different positioning and spanning behavior at each screen size.
  * 
- * @param {List} $pos - List of position tuples for each breakpoint
- *                      Format: (col-start row-start col-span row-span) for base, xs, sm, md, lg, xl
- * @param {List} $columns - Column counts for each breakpoint (from grid-container)
- * @param {List} $rows - Row counts for each breakpoint (from grid-container)
+ * @param {Map} $pos - Map of position tuples for each breakpoint
+ *                     Format: (default: (col-start row-start col-span row-span), sm: (...), ...)
+ * @param {Map} $columns - Column counts map for each breakpoint (from grid-container)
+ * @param {Map} $rows - Row counts map for each breakpoint (from grid-container)
  * @param {Length} $width - Border width (defaults to theme thick border)
  * @param {Color} $color - Border color (defaults to theme border color)
  * 
  * @example
- *   // Cell spans full width on mobile, half width on tablet+
- *   $positions: (1 1 1 1), (1 1 1 1), (1 1 1 1), (1 1 2 1), (1 1 2 1), (1 1 2 1);
+ *   $positions: (default: (1 1 1 1), md: (1 1 2 1));
  *   @include grid-cell($positions, $grid-columns, $grid-rows);
  */
 @mixin grid-cell(
@@ -108,20 +137,22 @@ $breakpoint-sizes: 640px, 768px, 1024px, 1280px, 1536px;
 	$width: $size-layout-thickness-thick,
 	$color: $palette-functional-border
 ) {
-	@include grid-cell-styles(
-		list.nth($pos, 1),
-		list.nth($columns, 1),
-		list.nth($rows, 1),
-		$color,
-		$width
-	);
+	@if map.has-key($pos, 'default') {
+		@include grid-cell-styles(
+			map.get($pos, 'default'),
+				list.length(map.get($columns, 'default')),
+				list.length(map.get($rows, 'default')),
+			$color,
+			$width
+		);
+	}
 
-	@for $i from 1 through list.length($breakpoint-names) {
-		@media (min-width: list.nth($breakpoint-sizes, $i)) {
+	@each $key, $val in $pos {
+		@media (min-width: $val) {
 			@include grid-cell-styles(
-				list.nth($pos, $i + 1),
-				list.nth($columns, $i + 1),
-				list.nth($rows, $i + 1),
+				map.get($pos, $key),
+				list.length(map.get($columns, $key)),
+				list.length(map.get($rows, $key)),
 				$color,
 				$width
 			);
