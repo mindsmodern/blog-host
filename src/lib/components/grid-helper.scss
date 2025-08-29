@@ -23,10 +23,10 @@ $breakpoint-sizes: 640px, 768px, 1024px, 1280px, 1536px;
  * @return {*} The list item or default value
  */
 @function get-list($list, $index, $default: null) {
-  @if length($list) >= $index {
-    @return list.nth($list, $index);
-  }
-  @return $default;
+	@if length($list) >= $index {
+		@return list.nth($list, $index);
+	}
+	@return $default;
 }
 
 /**
@@ -41,17 +41,17 @@ $breakpoint-sizes: 640px, 768px, 1024px, 1280px, 1536px;
  *   @include grid-container($columns, $rows);
  */
 @mixin grid-container($columns, $rows) {
-  display: grid;
-  grid-template-columns: repeat(var(--col-num, list.nth($columns, 1)), 1fr);
-  grid-template-rows: repeat(list.nth($rows, 1), 1fr);
+	display: grid;
+	grid-template-columns: repeat(var(--col-num, list.nth($columns, 1)), 1fr);
+	grid-template-rows: repeat(list.nth($rows, 1), 1fr);
 
-  @for $i from 1 through list.length($breakpoint-names) {
-    $size: list.nth($breakpoint-sizes, $i);
-    @media (min-width: $size) {
-      grid-template-columns: repeat(list.nth($columns, $i + 1), 1fr);
-      grid-template-rows: repeat(list.nth($rows, $i + 1), auto);
-    }
-  }
+	@for $i from 1 through list.length($breakpoint-names) {
+		$size: list.nth($breakpoint-sizes, $i);
+		@media (min-width: $size) {
+			grid-template-columns: repeat(list.nth($columns, $i + 1), 1fr);
+			grid-template-rows: repeat(list.nth($rows, $i + 1), auto);
+		}
+	}
 }
 
 /**
@@ -65,24 +65,24 @@ $breakpoint-sizes: 640px, 768px, 1024px, 1280px, 1536px;
  * @param {Length} $width - Border width
  */
 @mixin grid-cell-styles($pos, $column-max, $row-max, $color, $width) {
-  $column-start: get-list($pos, 1);
-  $row-start: get-list($pos, 2);
-  $column-end: $column-start + get-list($pos, 3, 1);
-  $row-end: $row-start + get-list($pos, 4, 1);
+	$column-start: get-list($pos, 1);
+	$row-start: get-list($pos, 2);
+	$column-end: $column-start + get-list($pos, 3, 1);
+	$row-end: $row-start + get-list($pos, 4, 1);
 
-  grid-row: #{$row-start} / #{$row-end};
-  grid-column: #{$column-start} / #{$column-end};
+	grid-row: #{$row-start} / #{$row-end};
+	grid-column: #{$column-start} / #{$column-end};
 
-  @if $row-end > $row-max {
-    border-bottom: none;
-  } @else {
-    border-bottom: $width solid $color;
-  }
-  @if $column-end > $column-max {
-    border-right: none;
-  } @else {
-    border-right: $width solid $color;
-  }
+	@if $row-end > $row-max {
+		border-bottom: none;
+	} @else {
+		border-bottom: $width solid $color;
+	}
+	@if $column-end > $column-max {
+		border-right: none;
+	} @else {
+		border-right: $width solid $color;
+	}
 }
 
 /**
@@ -101,24 +101,30 @@ $breakpoint-sizes: 640px, 768px, 1024px, 1280px, 1536px;
  *   $positions: (1 1 1 1), (1 1 1 1), (1 1 1 1), (1 1 2 1), (1 1 2 1), (1 1 2 1);
  *   @include grid-cell($positions, $grid-columns, $grid-rows);
  */
-@mixin grid-cell($pos, $columns, $rows, $width: $size-layout-thickness-thick, $color: $palette-functional-border) {
-  @include grid-cell-styles(
-    list.nth($pos, 1),
-    list.nth($columns, 1),
-    list.nth($rows, 1),
-    $color,
-    $width
-  );
+@mixin grid-cell(
+	$pos,
+	$columns,
+	$rows,
+	$width: $size-layout-thickness-thick,
+	$color: $palette-functional-border
+) {
+	@include grid-cell-styles(
+		list.nth($pos, 1),
+		list.nth($columns, 1),
+		list.nth($rows, 1),
+		$color,
+		$width
+	);
 
-  @for $i from 1 through list.length($breakpoint-names) {
-    @media (min-width: list.nth($breakpoint-sizes, $i)) {
-      @include grid-cell-styles(
-        list.nth($pos, $i + 1),
-        list.nth($columns, $i + 1),
-        list.nth($rows, $i + 1),
-        $color,
-        $width
-      );
-    }
-  }
+	@for $i from 1 through list.length($breakpoint-names) {
+		@media (min-width: list.nth($breakpoint-sizes, $i)) {
+			@include grid-cell-styles(
+				list.nth($pos, $i + 1),
+				list.nth($columns, $i + 1),
+				list.nth($rows, $i + 1),
+				$color,
+				$width
+			);
+		}
+	}
 }
