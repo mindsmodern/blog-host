@@ -1,12 +1,10 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import type { HTMLButtonAttributes } from 'svelte/elements';
 
-	interface Props {
+	interface ButtonProps extends HTMLButtonAttributes {
 		variant?: 'primary' | 'secondary' | 'tertiary';
 		size?: 'small' | 'medium' | 'large';
-		disabled?: boolean;
-		type?: 'button' | 'submit' | 'reset';
-		onclick?: (event: MouseEvent) => void;
 		children?: Snippet;
 		class?: string;
 		fill?: boolean;
@@ -15,19 +13,16 @@
 	const {
 		variant = 'primary',
 		size = 'medium',
-		disabled = false,
-		type = 'button',
-		onclick,
 		children,
 		class: className = '',
 		fill = true,
 		...restProps
-	}: Props = $props();
+	}: ButtonProps = $props();
 
 	const buttonClass = $derived(`button--${variant} button--${size} ${className}`.trim());
 </script>
 
-<button {type} {disabled} class={buttonClass} class:fill {onclick} {...restProps}>
+<button class={buttonClass} class:fill {...restProps}>
 	{#if children}
 		{@render children()}
 	{/if}
