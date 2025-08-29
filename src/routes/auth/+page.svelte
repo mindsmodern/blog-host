@@ -27,6 +27,7 @@
 		font-size: $typography-dimension-large-size;
 		line-height: $typography-dimension-large-height;
 		margin: 0;
+		letter-spacing: -0.03em;
 	}
 
 	$main-col: (
@@ -129,12 +130,12 @@
 		border-top: none;
 		background-color: inherit;
 		transition: all 0.15s ease-in-out;
+	}
 
-		&:focus-visible {
-			outline: $size-layout-thickness-thicker solid $palette-functional-primary;
-			outline-offset: $size-layout-thickness-thicker;
-			border-radius: $size-control-radius-small;
-		}
+	input:focus-visible {
+		outline: $size-layout-thickness-thicker solid $palette-functional-primary;
+		outline-offset: $size-layout-thickness-thicker;
+		border-radius: $size-control-radius-small;
 	}
 
 	#password {
