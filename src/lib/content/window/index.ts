@@ -1,20 +1,38 @@
 import type { WindowSchemaConfig } from '@mindsmodern/grid-editor';
 
 /**
+ * Checks if a string is a valid UUID (document ID)
+ */
+function isValidUUID(str: string): boolean {
+	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+	return uuidRegex.test(str);
+}
+
+/**
  * Creates a window configuration for grid-editor that integrates with our API endpoints
  *
  * This configuration handles:
- * - Content fetching from various sources (documents, books, custom URLs)
- * - URL validation for security
- * - Error handling for failed content loads
+ * - Document ID resolution to API endpoints
+ * - Content fetching with proper error handling
+ * - URL validation for security (only allows document IDs)
  *
  * @returns WindowSchemaConfig for use with grid-editor
  */
 export function createWindowSchemaConfig(): WindowSchemaConfig {
 	// Content fetcher for Window nodes
-	const getContent = async (url: string): Promise<string> => {
+	const getContent = async (urlOrId: string): Promise<string> => {
 		try {
-			const response = await fetch(url);
+			let fetchUrl: string;
+			
+			// If it's a UUID (document ID), convert to API endpoint
+			if (isValidUUID(urlOrId)) {
+				fetchUrl = `/api/content/window?id=${urlOrId}`;
+			} else {
+				// Otherwise treat as a regular URL (should be blocked by isAllowedUrl)
+				fetchUrl = urlOrId;
+			}
+			
+			const response = await fetch(fetchUrl);
 			if (!response.ok) {
 				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 			}
@@ -30,13 +48,9 @@ export function createWindowSchemaConfig(): WindowSchemaConfig {
 	return {
 		getContent,
 		renderWindows: true,
-		isAllowedUrl: (url: string) => {
-			// Allow local API endpoints
-			if (url.startsWith('/api/')) {
-				return true;
-			}
-			// Block HTTP and other protocols for security
-			return false;
+		isAllowedUrl: (urlOrId: string) => {
+			// Only allow document IDs (UUIDs) for security
+			return isValidUUID(urlOrId);
 		}
 	};
 }

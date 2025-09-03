@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
 import type { RequestHandler } from './$types';
-import { WindowContentRenderer } from '@mindsmodern/grid-editor';
+import { renderContent } from '@mindsmodern/grid-editor';
 import { supabaseAnon } from '$lib/server/supabase';
 import { error } from '@sveltejs/kit';
 
@@ -27,18 +27,14 @@ export const GET: RequestHandler = async ({ url }) => {
 	const domDocument = dom.window.document as unknown as Document;
 
 	// Parse the document content (assuming it's a ProseMirror document)
-	const doc = document.content;
+	const doc = document.content as any;
 
-	// Use WindowContentRenderer to serialize to HTML
-	const renderer = new WindowContentRenderer(
-		{
-			renderWindows: false,
-			isAllowedUrl: (url) => url.startsWith('/') || url.startsWith('http')
-		},
-		domDocument
-	);
-
-	const html = renderer.serializeToHTML(doc, null);
+	// Use renderContent to serialize to HTML
+	const html = await renderContent(doc, {
+		document: domDocument,
+		renderWindows: false,
+		isAllowedUrl: (url: string) => url.startsWith('/') || url.startsWith('http')
+	});
 
 	return new Response(html, {
 		headers: {

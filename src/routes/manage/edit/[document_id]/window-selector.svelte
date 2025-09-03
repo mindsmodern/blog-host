@@ -55,11 +55,10 @@
 			return;
 		}
 
-		const url = `/api/content/window?id=${selectedDocument.id}`;
 		const windowTitle = title || selectedDocument.title;
 
 		current?.({
-			url,
+			url: selectedDocument.id, // Store document ID as URL
 			title: windowTitle
 		});
 	};
