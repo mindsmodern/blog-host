@@ -52,7 +52,7 @@
 	},
 	"dependencies": {
 		"@mindsmodern/design-primitives": "^1.0.1",
-		"@mindsmodern/grid-editor": "^0.2.0",
+		"@mindsmodern/grid-editor": "^0.3.0",
 		"@supabase/ssr": "^0.6.1",
 		"@supabase/supabase-js": "^2.55.0",
 		"@zag-js/svelte": "^1.21.3",

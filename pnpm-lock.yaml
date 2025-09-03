@@ -12,8 +12,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       '@mindsmodern/grid-editor':
-        specifier: ^0.2.0
-        version: 0.2.0(svelte@5.38.1)
+        specifier: ^0.3.0
+        version: 0.3.0(svelte@5.38.1)
       '@supabase/ssr':
         specifier: ^0.6.1
         version: 0.6.1(@supabase/supabase-js@2.55.0)
@@ -403,14 +403,11 @@ packages:
   '@jridgewell/trace-mapping@0.3.30':
     resolution: {integrity: sha512-GQ7Nw5G2lTu/BtHTKfXhKHok2WGetd4XYcVKGx00SjAk8GMwgJM3zr6zORiPGuOE+/vkc90KtTosSSvaCjKb2Q==}
 
-  '@mindsmodern/design-primitives@0.0.1':
-    resolution: {integrity: sha512-F5IfETB+CMhMIEXW6UswZ+HhSR0KE09QteegA+cCanqoHWV1scQxt7pcYqz/fRaXuL9XQCsXmotugripvXhOVg==, tarball: https://npm.pkg.github.com/download/@mindsmodern/design-primitives/0.0.1/ae4cf77a8b9a9d7a537acae540842c6314c1ff14}
-
   '@mindsmodern/design-primitives@1.0.1':
     resolution: {integrity: sha512-LEHJq49qKsMLJ4oaU9MunJV5nxqr3iA5ezigEj1Sc7lhFSaa35ilWJuaFSi0ivC+IimTF6kdeuMb1iKpnM5IeA==, tarball: https://npm.pkg.github.com/download/@mindsmodern/design-primitives/1.0.1/c24dc885b506ff93269e39cf7f3519e8eec6ffc8}
 
-  '@mindsmodern/grid-editor@0.2.0':
-    resolution: {integrity: sha512-J9Dd71ap2OiMmBXjU7d4vEIkf9ViAsBSkSvw1WTtdhnSVlDMnQSo5OKrh4ZNjN2hg6rR2EAlv0GBGvE3X5+28A==, tarball: https://npm.pkg.github.com/download/@mindsmodern/grid-editor/0.2.0/4a06e5351da0a4b9eb35416b5d307ef052f54cc5}
+  '@mindsmodern/grid-editor@0.3.0':
+    resolution: {integrity: sha512-F9nOHNk3CSh0Im0J69ZjH6VLCGHoRnHxM14vaFtLFyDwaElWFCW/TynHFrT1DpYQI1NVtl5I/0m9Gy5kRCgueA==, tarball: https://npm.pkg.github.com/download/@mindsmodern/grid-editor/0.3.0/4d829344e70fb0b762017a570e7334ec73486c80}
     peerDependencies:
       svelte: ^5.0.0
 
@@ -726,9 +723,6 @@ packages:
 
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
-
-  '@types/trusted-types@2.0.7':
-    resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
   '@types/whatwg-mimetype@3.0.2':
     resolution: {integrity: sha512-c2AKvDT8ToxLIOUlN51gTiHXflsfIFisS4pO7pDPoKouJCESkhZnEy623gwP9laCy5lnLDAw1vAzu2vM2YLOrA==}
@@ -1054,9 +1048,6 @@ packages:
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
 
-  dompurify@3.2.6:
-    resolution: {integrity: sha512-/2GogDQlohXPZe6D6NOgQvXLPSYBqIWMnZ8zzOhn09REE4eyAzb+Hed3jhoM9OkuaJ8P6ZGTTVWQKAi8ieIzfQ==}
-
   entities@6.0.1:
     resolution: {integrity: sha512-aN97NXWF6AWBTahfVOIrB/NShkzi5H7F9r1s9mD3cDj4Ko5f2qhhVoYMibXF7GlLveb/D2ioWay8lxI97Ven3g==}
     engines: {node: '>=0.12'}
@@ -1156,6 +1147,10 @@ packages:
 
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
+
+  fast-xml-parser@5.2.5:
+    resolution: {integrity: sha512-pfX9uG9Ki0yekDHx2SiuRIyFdyAr1kMIMitPvb0YBo8SUfKvia7w7FIyd/l6av85pFYRhZscS75MwMnbvY+hcQ==}
+    hasBin: true
 
   fastq@1.19.1:
     resolution: {integrity: sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==}
@@ -1770,6 +1765,9 @@ packages:
   strip-literal@3.0.0:
     resolution: {integrity: sha512-TcccoMhJOM3OebGhSBEmp3UZ2SfDMZUEBdRA/9ynfLi8yYajyWX3JiXArcJt4Umh4vISpspkQIY8ZZoCqjbviA==}
 
+  strnum@2.1.1:
+    resolution: {integrity: sha512-7ZvoFTiCnGxBtDqJ//Cu6fWtZtc7Y3x+QOirG15wztbdngGSkht27o2pyGWrVy0b4WAy3jbKmnoK6g5VlVNUUw==}
+
   supabase@2.34.3:
     resolution: {integrity: sha512-nMO7MFkw3ze/ScRt8S7AssNuBDbFeEsu2MTF2hol5T8HoAz5WgoLhhwCL5NUh8G0Jigpg88QIaDEPhHdNvv9TQ==}
     engines: {npm: '>=8'}
@@ -2300,16 +2298,13 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@mindsmodern/design-primitives@0.0.1': {}
-
   '@mindsmodern/design-primitives@1.0.1': {}
 
-  '@mindsmodern/grid-editor@0.2.0(svelte@5.38.1)':
+  '@mindsmodern/grid-editor@0.3.0(svelte@5.38.1)':
     dependencies:
       '@floating-ui/dom': 1.7.4
-      '@mindsmodern/design-primitives': 0.0.1
       bezier-easing: 2.1.0
-      dompurify: 3.2.6
+      fast-xml-parser: 5.2.5
       happy-dom: 18.0.1
       jsdom: 26.1.0
       prosemirror-commands: 1.7.1
@@ -2608,9 +2603,6 @@ snapshots:
   '@types/phoenix@1.6.6': {}
 
   '@types/tough-cookie@4.0.5': {}
-
-  '@types/trusted-types@2.0.7':
-    optional: true
 
   '@types/whatwg-mimetype@3.0.2': {}
 
@@ -2957,10 +2949,6 @@ snapshots:
 
   dom-accessibility-api@0.5.16: {}
 
-  dompurify@3.2.6:
-    optionalDependencies:
-      '@types/trusted-types': 2.0.7
-
   entities@6.0.1: {}
 
   es-module-lexer@1.7.0: {}
@@ -3110,6 +3098,10 @@ snapshots:
   fast-json-stable-stringify@2.1.0: {}
 
   fast-levenshtein@2.0.6: {}
+
+  fast-xml-parser@5.2.5:
+    dependencies:
+      strnum: 2.1.1
 
   fastq@1.19.1:
     dependencies:
@@ -3669,6 +3661,8 @@ snapshots:
   strip-literal@3.0.0:
     dependencies:
       js-tokens: 9.0.1
+
+  strnum@2.1.1: {}
 
   supabase@2.34.3:
     dependencies:
