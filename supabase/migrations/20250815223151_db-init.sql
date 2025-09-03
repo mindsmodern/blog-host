@@ -254,25 +254,6 @@ CREATE POLICY "domains_select_own"
   TO authenticated
   USING ((SELECT auth.uid()) = owner_id);
 
-DROP POLICY IF EXISTS "domains_insert_own" ON domains;
-CREATE POLICY "domains_insert_own"
-  ON domains FOR INSERT
-  TO authenticated
-  WITH CHECK ((SELECT auth.uid()) = owner_id);
-
-DROP POLICY IF EXISTS "domains_update_own" ON domains;
-CREATE POLICY "domains_update_own"
-  ON domains FOR UPDATE
-  TO authenticated
-  USING ((SELECT auth.uid()) = owner_id)
-  WITH CHECK ((SELECT auth.uid()) = owner_id);
-
-DROP POLICY IF EXISTS "domains_delete_own" ON domains;
-CREATE POLICY "domains_delete_own"
-  ON domains FOR DELETE
-  TO authenticated
-  USING ((SELECT auth.uid()) = owner_id);
-
 -- ---------- POSTS (owner CRUD) ----------
 DROP POLICY IF EXISTS "posts_select_owner" ON posts;
 CREATE POLICY "posts_select_owner"
