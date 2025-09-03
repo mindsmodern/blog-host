@@ -27,19 +27,19 @@ VALUES (
 -- Create posts for mock documents
 INSERT INTO posts (domain_id, title, slug)
 VALUES 
-  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Simple Document Example', 'simple'),
-  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Formatted Text Example', 'formatted'),
-  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Split Layout Example', 'split'),
-  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Complex Layout Example', 'complex'),
-  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Multi-Split Layout Example', 'multisplit'),
-  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Empty Document Example', 'empty');
+  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Simple Document Example', '/simple'),
+  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Formatted Text Example', '/formatted'),
+  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Split Layout Example', '/split'),
+  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Complex Layout Example', '/complex'),
+  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Multi-Split Layout Example', '/multisplit'),
+  ((SELECT id FROM domains WHERE domain_name = 'modernpromenader'), 'Empty Document Example', '/empty');
 
 -- Mock document data generated from mock-documents.js
 
 -- Insert simple document
 INSERT INTO documents (post_id, tag, content, width, created_at, updated_at)
 VALUES (
-  (SELECT id FROM posts WHERE slug = 'simple'),
+  (SELECT id FROM posts WHERE slug = '/simple'),
   'simple',
   '{"type":"doc","content":[{"type":"container","content":[{"type":"cell","attrs":{"color":"foreground","width":"thicker","background":"background","padding":"normal","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"This is a simple paragraph with some text."}]},{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"Here is another paragraph with more content."}]}]}]}]}]}'::jsonb,
   16,
@@ -50,7 +50,7 @@ VALUES (
 -- Insert formatted document
 INSERT INTO documents (post_id, tag, content, width, created_at, updated_at)
 VALUES (
-  (SELECT id FROM posts WHERE slug = 'formatted'),
+  (SELECT id FROM posts WHERE slug = '/formatted'),
   'formatted',
   '{"type":"doc","content":[{"type":"container","content":[{"type":"cell","attrs":{"color":"foreground","width":"thicker","background":"background","padding":"normal","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"This paragraph has "},{"type":"text","marks":[{"type":"strong"}],"text":"bold text"},{"type":"text","text":" and "},{"type":"text","marks":[{"type":"em"}],"text":"italic text"},{"type":"text","text":"."}]},{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"Another paragraph with a "},{"type":"text","marks":[{"type":"link","attrs":{"href":"https://example.com","title":null}}],"text":"link"},{"type":"text","text":" in it."}]}]}]}]}]}'::jsonb,
   16,
@@ -61,7 +61,7 @@ VALUES (
 -- Insert split document
 INSERT INTO documents (post_id, tag, content, width, created_at, updated_at)
 VALUES (
-  (SELECT id FROM posts WHERE slug = 'split'),
+  (SELECT id FROM posts WHERE slug = '/split'),
   'split',
   '{"type":"container","content":[{"type":"split","attrs":{"color":"foreground","width":"thicker","span":0.6},"content":[{"type":"container","content":[{"type":"cell","attrs":{"color":"foreground","width":"thicker","background":"primary","padding":"compact","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"This is the left side of the split."}]},{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"It takes up 60% of the width."}]}]}]}]},{"type":"container","content":[{"type":"cell","attrs":{"color":"foreground","width":"thicker","background":"secondary","padding":"compact","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"This is the left side of the split."}]},{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"It takes up 60% of the width."}]}]}]}]}]}]}'::jsonb,
   32,
@@ -72,7 +72,7 @@ VALUES (
 -- Insert complex document
 INSERT INTO documents (post_id, tag, content, width, created_at, updated_at)
 VALUES (
-  (SELECT id FROM posts WHERE slug = 'complex'),
+  (SELECT id FROM posts WHERE slug = '/complex'),
   'complex',
   '{"type":"doc","content":[{"type":"container","content":[{"type":"cell","attrs":{"color":"background","width":"thicker","background":"primary","padding":"normal","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","marks":[{"type":"strong"}],"text":"Document Header"}]}]}]},{"type":"split","attrs":{"color":"foreground","width":"thicker","span":0.7},"content":[{"type":"container","content":[{"type":"cell","attrs":{"color":"foreground","width":"thicker","background":"background","padding":"normal","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"Main Content Area"}]},{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"This is where the primary content would go. "},{"type":"text","marks":[{"type":"em"}],"text":"It might contain "},{"type":"text","marks":[{"type":"em"},{"type":"strong"}],"text":"formatted text"},{"type":"text","text":" and other elements."}]}]}]},{"type":"split","attrs":{"color":"foreground","width":"thicker","span":0.5},"content":[{"type":"container","content":[{"type":"cell","attrs":{"color":"background","width":"thicker","background":"tertiary","padding":"condensed","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"Sub-content A"}]}]}]}]},{"type":"container","content":[{"type":"cell","attrs":{"color":"primary","width":"thicker","background":"secondary","padding":"spacious","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"Sub-content B"}]}]}]}]}]}]},{"type":"container","content":[{"type":"cell","attrs":{"color":"foreground","width":"thicker","background":"background","padding":"normal","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","marks":[{"type":"strong"}],"text":"Sidebar"}]},{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"This is a sidebar with additional information."}]}]}]},{"type":"cell","attrs":{"color":"foreground","width":"thicker","background":"background","padding":"normal","height":10},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"Another Widget"}]},{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"More sidebar content here."}]}]}]}]}]},{"type":"cell","attrs":{"color":"foreground","width":"thicker","background":"background","padding":"normal","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"Document Footer - "},{"type":"text","marks":[{"type":"link","attrs":{"href":"mailto:contact@example.com","title":null}}],"text":"Contact us"}]}]}]}]}]}'::jsonb,
   60,
@@ -83,7 +83,7 @@ VALUES (
 -- Insert multisplit document
 INSERT INTO documents (post_id, tag, content, width, created_at, updated_at)
 VALUES (
-  (SELECT id FROM posts WHERE slug = 'multisplit'),
+  (SELECT id FROM posts WHERE slug = '/multisplit'),
   'multisplit',
   '{"type":"doc","content":[{"type":"container","content":[{"type":"split","attrs":{"color":"foreground","width":"thicker","span":0.33},"content":[{"type":"container","content":[{"type":"cell","attrs":{"color":"background","width":"thicker","background":"primary","padding":"normal","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","marks":[{"type":"strong"}],"text":"Column 1"}]},{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"First column content."}]}]}]}]},{"type":"container","content":[{"type":"split","attrs":{"color":"foreground","width":"thicker","span":0.5},"content":[{"type":"container","content":[{"type":"cell","attrs":{"color":"background","width":"thicker","background":"background","padding":"normal","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","marks":[{"type":"strong"}],"text":"Column 2"}]},{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"Second column with embedded content:"}]}]}]},{"type":"cell","attrs":{"color":"foreground","width":"thicker","background":"background","padding":"normal","height":null},"content":[{"type":"window","attrs":{"url":"/split","title":"Embedded Simple Document"}}]}]},{"type":"container","content":[{"type":"cell","attrs":{"color":"background","width":"thicker","background":"background","padding":"normal","height":null},"content":[{"type":"textblock","content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","marks":[{"type":"strong"}],"text":"Column 3"}]},{"type":"paragraph","attrs":{"align":"left","size":"medium"},"content":[{"type":"text","text":"Third column content."}]}]}]}]}]}]}]}]}]}'::jsonb,
   60,
@@ -94,7 +94,7 @@ VALUES (
 -- Insert empty document
 INSERT INTO documents (post_id, tag, content, width, created_at, updated_at)
 VALUES (
-  (SELECT id FROM posts WHERE slug = 'empty'),
+  (SELECT id FROM posts WHERE slug = '/empty'),
   'empty',
   '{"type":"doc","content":[{"type":"container","content":[{"type":"cell","attrs":{"color":"foreground","width":"thicker","background":"background","padding":"normal","height":null},"content":[{"type":"paragraph","attrs":{"align":"left","size":"medium"}}]}]}]}'::jsonb,
   16,
