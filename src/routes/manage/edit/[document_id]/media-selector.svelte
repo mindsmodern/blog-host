@@ -50,21 +50,21 @@
 
 	const uploadAndSelect = async () => {
 		if (!selectedFile || !current) return;
-		
+
 		// Get domain ID from page data - this should come from the document/post context
 		const domainId = $page.data.domain?.id;
-		
+
 		if (!domainId) {
 			uploadError = 'No domain context found. Cannot upload media.';
 			return;
 		}
-		
+
 		isUploading = true;
 		uploadError = '';
-		
+
 		try {
 			const result = await uploadMedia(selectedFile, domainId, $page.data.supabase);
-			
+
 			current({
 				id: result.handle,
 				title: mediaTitle || selectedFile.name,
@@ -99,16 +99,14 @@
 	>
 		<div class="modal">
 			<div class="instruction">
-				<p class="inst1">
-					Upload Media File
-				</p>
+				<p class="inst1">Upload Media File</p>
 				<p class="inst2">Select an image or video file to add to your blog post.</p>
 			</div>
 			<div class="controls">
 				<div class="control-group">
 					<label>Select File:</label>
-					<input 
-						type="file" 
+					<input
+						type="file"
 						accept="image/*,video/*"
 						onchange={handleFileSelect}
 						disabled={isUploading}
@@ -126,10 +124,10 @@
 				{/if}
 				<div class="control-group">
 					<label>Title (optional):</label>
-					<input 
-						type="text" 
-						bind:value={mediaTitle} 
-						placeholder="Custom title..." 
+					<input
+						type="text"
+						bind:value={mediaTitle}
+						placeholder="Custom title..."
 						disabled={isUploading}
 					/>
 				</div>
@@ -146,21 +144,11 @@
 				</div>
 				<div class="control-group">
 					<label>Left offset (em):</label>
-					<input 
-						type="number" 
-						bind:value={mediaLeft} 
-						step="0.1" 
-						disabled={isUploading}
-					/>
+					<input type="number" bind:value={mediaLeft} step="0.1" disabled={isUploading} />
 				</div>
 				<div class="control-group">
 					<label>Top offset (em):</label>
-					<input 
-						type="number" 
-						bind:value={mediaTop} 
-						step="0.1" 
-						disabled={isUploading}
-					/>
+					<input type="number" bind:value={mediaTop} step="0.1" disabled={isUploading} />
 				</div>
 			</div>
 			{#if uploadError}
@@ -169,8 +157,8 @@
 				</div>
 			{/if}
 			<div class="button">
-				<button 
-					onclick={uploadAndSelect} 
+				<button
+					onclick={uploadAndSelect}
 					disabled={!selectedFile || isUploading}
 					class:uploading={isUploading}
 				>
@@ -254,7 +242,7 @@
 		border-color: theme.$palette-functional-primary;
 	}
 
-	.control-group input[type="file"] {
+	.control-group input[type='file'] {
 		padding: 0.3em;
 		border: 2px dashed color-mix(in hsl, theme.$palette-functional-foreground, transparent 70%);
 		border-radius: 4px;
@@ -262,7 +250,7 @@
 		cursor: pointer;
 	}
 
-	.control-group input[type="file"]:hover {
+	.control-group input[type='file']:hover {
 		border-color: color-mix(in hsl, theme.$palette-functional-foreground, transparent 50%);
 		background-color: color-mix(in hsl, theme.$palette-functional-foreground, transparent 95%);
 	}
@@ -344,8 +332,14 @@
 	}
 
 	@keyframes pulse {
-		0% { opacity: 1; }
-		50% { opacity: 0.5; }
-		100% { opacity: 1; }
+		0% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
+		100% {
+			opacity: 1;
+		}
 	}
 </style>

@@ -20,9 +20,12 @@ describe('resolveMediaUrl', () => {
 
 	it('should resolve a valid image handle successfully', () => {
 		const handle = '123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg';
-		
+
 		(mockSupabase.storage.getPublicUrl as any).mockReturnValue({
-			data: { publicUrl: 'https://example.com/storage/media/123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg' }
+			data: {
+				publicUrl:
+					'https://example.com/storage/media/123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg'
+			}
 		});
 
 		const result = resolveMediaUrl(handle, mockSupabase);
@@ -41,7 +44,7 @@ describe('resolveMediaUrl', () => {
 
 	it('should resolve a valid video handle successfully', () => {
 		const handle = '123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.mp4';
-		
+
 		(mockSupabase.storage.getPublicUrl as any).mockReturnValue({
 			data: { publicUrl: 'https://example.com/video.mp4' }
 		});
@@ -72,13 +75,13 @@ describe('resolveMediaUrl', () => {
 
 		testCases.forEach(({ ext, expectedType }) => {
 			const handle = `123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.${ext}`;
-			
+
 			(mockSupabase.storage.getPublicUrl as any).mockReturnValue({
 				data: { publicUrl: `https://example.com/test.${ext}` }
 			});
 
 			const result = resolveMediaUrl(handle, mockSupabase);
-			
+
 			expect(result?.type).toBe(expectedType);
 			expect(result?.metadata?.contentType).toBe(`${expectedType}/${ext}`);
 		});
@@ -96,7 +99,7 @@ describe('resolveMediaUrl', () => {
 			'123e4567-e89b-12d3-a456-426614174000-987fcdeb-51a2-43d1-9f47-123456789abc.jpg' // Missing slash
 		];
 
-		invalidHandles.forEach(handle => {
+		invalidHandles.forEach((handle) => {
 			const result = resolveMediaUrl(handle, mockSupabase);
 			expect(result).toBeNull();
 		});
@@ -112,13 +115,13 @@ describe('resolveMediaUrl', () => {
 
 	it('should handle errors gracefully', () => {
 		const handle = '123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg';
-		
+
 		(mockSupabase.storage.getPublicUrl as any).mockImplementation(() => {
 			throw new Error('Storage error');
 		});
 
 		const result = resolveMediaUrl(handle, mockSupabase);
-		
+
 		expect(result).toBeNull();
 		expect(console.error).toHaveBeenCalledWith(
 			expect.stringContaining('Error resolving media URL'),

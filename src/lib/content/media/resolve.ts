@@ -20,7 +20,8 @@ export interface MediaResolution {
 function isValidMediaHandle(handle: string): boolean {
 	// Pattern: {domain_id}/{media_id}.{ext}
 	// Both domain_id and media_id should be UUIDs
-	const pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(jpg|jpeg|png|gif|webp|svg|mp4|webm|ogg)$/i;
+	const pattern =
+		/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(jpg|jpeg|png|gif|webp|svg|mp4|webm|ogg)$/i;
 	return pattern.test(handle);
 }
 
@@ -42,7 +43,7 @@ function getFilenameFromHandle(handle: string): string {
 
 /**
  * Resolves a media handle to its public URL and metadata using Supabase's documented methods
- * 
+ *
  * @param handle - The media handle (storage path) in format: {domain_id}/{media_id}.{ext}
  * @param supabase - The Supabase client instance
  * @returns MediaResolution object with src URL, type, and metadata, or null if invalid/not found
@@ -56,18 +57,16 @@ export function resolveMediaUrl(
 		console.warn(`Invalid media handle format: ${handle}`);
 		return null;
 	}
-	
+
 	try {
 		// Use Supabase's documented getPublicUrl method
-		const { data } = supabase.storage
-			.from('media')
-			.getPublicUrl(handle);
-		
+		const { data } = supabase.storage.from('media').getPublicUrl(handle);
+
 		// Extract file extension to determine type
 		const extension = handle.split('.').pop() || '';
 		const mediaType = getMediaTypeFromExtension(extension);
 		const filename = getFilenameFromHandle(handle);
-		
+
 		return {
 			src: data.publicUrl,
 			type: mediaType,
@@ -84,7 +83,7 @@ export function resolveMediaUrl(
 
 /**
  * Batch resolves multiple media handles efficiently
- * 
+ *
  * @param handles - Array of media handles to resolve
  * @param supabase - The Supabase client instance
  * @returns Map of handle to MediaResolution (or null if resolution failed)
@@ -94,10 +93,10 @@ export function resolveMultipleMediaUrls(
 	supabase: SupabaseClient<Database>
 ): Map<string, MediaResolution | null> {
 	const results = new Map<string, MediaResolution | null>();
-	
+
 	for (const handle of handles) {
 		results.set(handle, resolveMediaUrl(handle, supabase));
 	}
-	
+
 	return results;
 }

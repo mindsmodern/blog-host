@@ -31,7 +31,7 @@ import { error, redirect } from '@sveltejs/kit';
 // Create mock request event
 const createMockEvent = (searchParams: Record<string, string | null> = {}) => {
 	const url = new URL('http://localhost/api/content/media');
-	
+
 	Object.entries(searchParams).forEach(([key, value]) => {
 		if (value !== null) {
 			url.searchParams.set(key, value);
@@ -63,7 +63,7 @@ describe('API Endpoint: GET /api/content/media', () => {
 
 		// Expect redirect to throw with status and location
 		await expect(GET(event as any)).rejects.toThrow();
-		
+
 		try {
 			await GET(event as any);
 		} catch (e: any) {
@@ -79,7 +79,7 @@ describe('API Endpoint: GET /api/content/media', () => {
 		const event = createMockEvent({}); // No 'id' parameter
 
 		await expect(GET(event as any)).rejects.toThrow();
-		
+
 		try {
 			await GET(event as any);
 		} catch (e: any) {
@@ -94,7 +94,7 @@ describe('API Endpoint: GET /api/content/media', () => {
 		const event = createMockEvent({ id: '' });
 
 		await expect(GET(event as any)).rejects.toThrow();
-		
+
 		try {
 			await GET(event as any);
 		} catch (e: any) {
@@ -112,7 +112,7 @@ describe('API Endpoint: GET /api/content/media', () => {
 		(resolveMediaUrl as any).mockReturnValue(null); // Media not found
 
 		await expect(GET(event as any)).rejects.toThrow();
-		
+
 		try {
 			await GET(event as any);
 		} catch (e: any) {
@@ -220,10 +220,10 @@ describe('API Endpoint: GET /api/content/media', () => {
 
 	it('should work with different media file extensions', async () => {
 		const extensions = ['jpg', 'png', 'gif', 'webp', 'mp4', 'webm', 'ogg'];
-		
+
 		for (const ext of extensions) {
 			vi.clearAllMocks();
-			
+
 			const mediaId = `123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.${ext}`;
 			const event = createMockEvent({ id: mediaId });
 

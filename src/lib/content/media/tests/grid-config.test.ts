@@ -45,7 +45,7 @@ describe('createMediaSchemaConfig', () => {
 				'123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.ogg'
 			];
 
-			validHandles.forEach(handle => {
+			validHandles.forEach((handle) => {
 				expect(config.isValidMediaId!(handle)).toBe(true);
 			});
 		});
@@ -65,7 +65,7 @@ describe('createMediaSchemaConfig', () => {
 				42 as any
 			];
 
-			invalidHandles.forEach(handle => {
+			invalidHandles.forEach((handle) => {
 				expect(config.isValidMediaId!(handle)).toBe(false);
 			});
 		});
@@ -130,7 +130,7 @@ describe('createMediaSchemaConfig', () => {
 			};
 
 			const placeholder = config.generatePlaceholder!(attrs);
-			
+
 			expect(placeholder[2]).toBe('📎 Loading media...');
 		});
 	});
@@ -138,7 +138,8 @@ describe('createMediaSchemaConfig', () => {
 	describe('resolveMedia', () => {
 		it('should resolve valid image handle to API URL', () => {
 			const config = createMediaSchemaConfig();
-			const handle = '123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg';
+			const handle =
+				'123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg';
 
 			const result = config.resolveMedia!(handle);
 
@@ -154,7 +155,8 @@ describe('createMediaSchemaConfig', () => {
 
 		it('should resolve valid video handle to API URL', () => {
 			const config = createMediaSchemaConfig();
-			const handle = '123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.mp4';
+			const handle =
+				'123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.mp4';
 
 			const result = config.resolveMedia!(handle);
 
@@ -170,7 +172,7 @@ describe('createMediaSchemaConfig', () => {
 
 		it('should return null for invalid handles', () => {
 			const config = createMediaSchemaConfig();
-			
+
 			expect(config.resolveMedia!('invalid')).toBeNull();
 			expect(config.resolveMedia!('')).toBeNull();
 			expect(config.resolveMedia!(null as any)).toBeNull();
@@ -178,10 +180,11 @@ describe('createMediaSchemaConfig', () => {
 
 		it('should handle special characters in handle by URL encoding', () => {
 			const config = createMediaSchemaConfig();
-			const handle = '123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg';
-			
+			const handle =
+				'123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg';
+
 			const result = config.resolveMedia!(handle);
-			
+
 			// The handle should be URL encoded in the API URL
 			expect(result?.src).toBe(`/api/content/media?id=${encodeURIComponent(handle)}`);
 		});
@@ -195,7 +198,7 @@ describe('createMediaSchemaConfig', () => {
 		});
 
 		const config = createMediaSchemaConfig();
-		
+
 		expect(config.document).toBeUndefined();
 	});
 });
@@ -213,19 +216,21 @@ describe('createServerMediaSchemaConfig', () => {
 
 	it('should always return null from resolveMedia on server', () => {
 		const config = createServerMediaSchemaConfig();
-		
-		const validHandle = '123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg';
+
+		const validHandle =
+			'123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg';
 		const result = config.resolveMedia!(validHandle);
-		
+
 		expect(result).toBeNull();
 	});
 
 	it('should still validate media IDs on server', () => {
 		const config = createServerMediaSchemaConfig();
-		
-		const validHandle = '123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg';
+
+		const validHandle =
+			'123e4567-e89b-12d3-a456-426614174000/987fcdeb-51a2-43d1-9f47-123456789abc.jpg';
 		const invalidHandle = 'invalid';
-		
+
 		expect(config.isValidMediaId!(validHandle)).toBe(true);
 		expect(config.isValidMediaId!(invalidHandle)).toBe(false);
 	});
@@ -241,7 +246,7 @@ describe('createServerMediaSchemaConfig', () => {
 		};
 
 		const placeholder = config.generatePlaceholder!(attrs);
-		
+
 		expect(placeholder).toEqual([
 			'div',
 			expect.objectContaining({

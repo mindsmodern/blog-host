@@ -68,7 +68,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.neq('id', document_id); // Exclude current document
 
 	// Transform available documents to simpler format
-	const transformedDocuments = (availableDocuments || []).map(doc => ({
+	const transformedDocuments = (availableDocuments || []).map((doc) => ({
 		id: doc.id,
 		title: doc.posts.title,
 		slug: doc.posts.slug,

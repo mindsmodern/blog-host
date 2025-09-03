@@ -11,7 +11,13 @@
 @use 'sass:list';
 
 // Responsive breakpoint definitions
-$breakpoints: (xs: 640px, sm: 768px, md: 1024px, lg: 1280px, xl: 1536px);
+$breakpoints: (
+	xs: 640px,
+	sm: 768px,
+	md: 1024px,
+	lg: 1280px,
+	xl: 1536px
+);
 
 /**
  * Joins a list of values into a string with a specified separator.
@@ -25,11 +31,11 @@ $breakpoints: (xs: 640px, sm: 768px, md: 1024px, lg: 1280px, xl: 1536px);
  *   join((1fr, 2fr, 1fr), " ") // Returns "1fr 2fr 1fr"
  */
 @function join($list, $sep) {
-	$s: "";
-	$result: "";
+	$s: '';
+	$result: '';
 
 	@each $str in $list {
-		$result: "#{$result}#{$s}#{$str}";
+		$result: '#{$result}#{$s}#{$str}';
 		$s: $sep;
 	}
 
@@ -52,7 +58,6 @@ $breakpoints: (xs: 640px, sm: 768px, md: 1024px, lg: 1280px, xl: 1536px);
 	@return $default;
 }
 
-
 /**
  * Creates a responsive CSS Grid container with map-based breakpoint configurations.
  * Each map value should be a list defining the grid template for that breakpoint.
@@ -70,14 +75,14 @@ $breakpoints: (xs: 640px, sm: 768px, md: 1024px, lg: 1280px, xl: 1536px);
 @mixin grid-container($columns, $rows) {
 	display: grid;
 	@if map.has-key($columns, 'default') and map.has-key($rows, 'default') {
-		grid-template-columns: #{join(map.get($columns, 'default'), " ")};
-		grid-template-rows: #{join(map.get($rows, 'default'), " ")};
+		grid-template-columns: #{join(map.get($columns, 'default'), ' ')};
+		grid-template-rows: #{join(map.get($rows, 'default'), ' ')};
 	}
 
 	@each $key, $value in $columns {
 		@media (min-width: $value) {
-			grid-template-columns: #{join(map.get($columns, $key), " ")};
-			grid-template-rows: #{join(map.get($rows, $key), " ")};
+			grid-template-columns: #{join(map.get($columns, $key), ' ')};
+			grid-template-rows: #{join(map.get($rows, $key), ' ')};
 		}
 	}
 }
@@ -94,7 +99,7 @@ $breakpoints: (xs: 640px, sm: 768px, md: 1024px, lg: 1280px, xl: 1536px);
  */
 @mixin respond-to($key) {
 	@media (min-width: map.get($breakpoints, $key)) {
-		@content
+		@content;
 	}
 }
 
@@ -156,8 +161,8 @@ $breakpoints: (xs: 640px, sm: 768px, md: 1024px, lg: 1280px, xl: 1536px);
 	@if map.has-key($pos, 'default') {
 		@include grid-cell-styles(
 			map.get($pos, 'default'),
-				list.length(map.get($columns, 'default')),
-				list.length(map.get($rows, 'default')),
+			list.length(map.get($columns, 'default')),
+			list.length(map.get($rows, 'default')),
 			$color,
 			$width
 		);

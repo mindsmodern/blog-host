@@ -1,9 +1,9 @@
 /**
  * Media handling module for Blog Host
- * 
+ *
  * This module provides functions for uploading media to Supabase Storage and
  * integrating with @mindsmodern/grid-editor for rich content editing.
- * 
+ *
  * Key features:
  * - Upload images and videos to Supabase Storage with proper RLS security
  * - Resolve media handles to public URLs for serving content
@@ -24,8 +24,4 @@ export type { MediaResolution } from './resolve.js';
 export { createMediaSchemaConfig, createServerMediaSchemaConfig } from './grid-config.js';
 
 // Re-export useful types from grid-editor for convenience
-export type { 
-	MediaAttrs, 
-	MediaTypes,
-	MediaSchemaConfig 
-} from '@mindsmodern/grid-editor';
+export type { MediaAttrs, MediaTypes, MediaSchemaConfig } from '@mindsmodern/grid-editor';

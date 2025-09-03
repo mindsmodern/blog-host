@@ -254,7 +254,7 @@
 		p {
 			margin: 0.5rem 0;
 			font-size: 0.9em;
-			
+
 			&:first-child {
 				font-weight: 500;
 			}
@@ -275,7 +275,9 @@
 		border-radius: 4px;
 		cursor: pointer;
 		font-size: 0.9em;
-		transition: background-color 0.2s, opacity 0.2s;
+		transition:
+			background-color 0.2s,
+			opacity 0.2s;
 
 		&:focus {
 			outline: 2px solid theme.$palette-functional-primary;

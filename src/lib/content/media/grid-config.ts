@@ -14,9 +14,10 @@ function isValidMediaId(id: string): boolean {
 	if (!id || typeof id !== 'string') {
 		return false;
 	}
-	
+
 	// Validate format: {uuid}/{uuid}.{ext}
-	const pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(jpg|jpeg|png|gif|webp|svg|mp4|webm|ogg)$/i;
+	const pattern =
+		/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(jpg|jpeg|png|gif|webp|svg|mp4|webm|ogg)$/i;
 	return pattern.test(id);
 }
 
@@ -25,7 +26,7 @@ function isValidMediaId(id: string): boolean {
  */
 function generatePlaceholder(attrs: MediaAttrs): DOMOutputSpec {
 	const { title, width, left, top } = attrs;
-	
+
 	const style = [
 		'display: inline-block',
 		'background: #f0f0f0',
@@ -41,9 +42,12 @@ function generatePlaceholder(attrs: MediaAttrs): DOMOutputSpec {
 		'line-height: 80px',
 		left !== 0 ? `margin-left: ${left}em` : '',
 		top !== 0 ? `margin-top: ${top}em` : ''
-	].filter(Boolean).join('; ');
-	
-	return ['div', 
+	]
+		.filter(Boolean)
+		.join('; ');
+
+	return [
+		'div',
 		{
 			class: 'media-placeholder',
 			style,
@@ -65,7 +69,7 @@ function getMediaTypeFromHandle(handle: string): 'image' | 'video' {
 
 /**
  * Creates a MediaSchemaConfig for the grid-editor that uses our API endpoint
- * 
+ *
  * @returns MediaSchemaConfig configured for this application
  */
 export function createMediaSchemaConfig(): MediaSchemaConfig {
@@ -74,12 +78,12 @@ export function createMediaSchemaConfig(): MediaSchemaConfig {
 		 * Validates media IDs (handles) to ensure they follow our UUID-based format
 		 */
 		isValidMediaId,
-		
+
 		/**
 		 * Generates placeholder content when media cannot be rendered
 		 */
 		generatePlaceholder,
-		
+
 		/**
 		 * Resolves media IDs to their source URLs using our API endpoint
 		 * This allows <img src="/api/content/media?id=..." /> to work directly
@@ -88,28 +92,29 @@ export function createMediaSchemaConfig(): MediaSchemaConfig {
 			if (!isValidMediaId(id)) {
 				return null;
 			}
-			
+
 			// Construct API URL for this media
 			const apiUrl = `/api/content/media?id=${encodeURIComponent(id)}`;
 			const mediaType = getMediaTypeFromHandle(id);
 			const filename = id.split('/').pop() || 'unknown';
-			
+
 			return {
 				src: apiUrl,
 				type: mediaType,
 				metadata: {
 					filename,
-					contentType: mediaType === 'video' ? `video/${id.split('.').pop()}` : `image/${id.split('.').pop()}`
+					contentType:
+						mediaType === 'video' ? `video/${id.split('.').pop()}` : `image/${id.split('.').pop()}`
 				}
 			};
 		},
-		
+
 		/**
 		 * Enable media rendering by default - set to true to show actual media content
 		 * Set to false during editing if you want to show placeholders instead
 		 */
 		renderMedia: true,
-		
+
 		/**
 		 * Use the global document for DOM operations
 		 * In SSR contexts, this might need to be overridden
