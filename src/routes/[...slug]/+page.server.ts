@@ -119,6 +119,7 @@ export const load: PageServerLoad = async ({ url, request, fetch }) => {
 		document: domDocument as unknown as Document,
 		renderWindows: true,
 		getContent: fetchContent,
+		getPath: (url: string) => `/api/redirect?id=${url}`,
 		isAllowedUrl: (urlOrId: string) => isValidUUID(urlOrId) // Only allow document IDs
 	});
 
@@ -127,7 +128,8 @@ export const load: PageServerLoad = async ({ url, request, fetch }) => {
 			title: post.title,
 			description: post.meta_description,
 			content: renderedHtml,
-			width: document.width
+			width: document.width,
+			slug
 		}
 	};
 };

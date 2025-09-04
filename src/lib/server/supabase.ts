@@ -7,3 +7,25 @@ import type { Database } from '$lib/util';
  * Shared across API endpoints that need to access public data
  */
 export const supabaseAnon = createClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+
+export async function getDocumentSlugAndTag(documentId: string) {
+	const { data, error } = await supabaseAnon
+		.from('documents')
+		.select(`
+			tag,
+			posts (
+				slug
+			)
+		`)
+		.eq('id', documentId)
+		.single();
+
+	if (error) {
+		throw error;
+	}
+
+	return {
+		slug: data.posts?.slug || null,
+		tag: data.tag
+	};
+}

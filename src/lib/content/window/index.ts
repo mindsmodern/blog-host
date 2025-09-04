@@ -18,12 +18,12 @@ function isValidUUID(str: string): boolean {
  *
  * @returns WindowSchemaConfig for use with grid-editor
  */
-export function createWindowSchemaConfig(): WindowSchemaConfig {
+export function createWindowSchemaConfig(customFetch?: typeof fetch): WindowSchemaConfig {
 	// Content fetcher for Window nodes
 	const getContent = async (urlOrId: string): Promise<string> => {
 		try {
 			let fetchUrl: string;
-			
+
 			// If it's a UUID (document ID), convert to API endpoint
 			if (isValidUUID(urlOrId)) {
 				fetchUrl = `/api/content/window?id=${urlOrId}`;
@@ -31,8 +31,11 @@ export function createWindowSchemaConfig(): WindowSchemaConfig {
 				// Otherwise treat as a regular URL (should be blocked by isAllowedUrl)
 				fetchUrl = urlOrId;
 			}
-			
-			const response = await fetch(fetchUrl);
+
+			if (!customFetch) {
+				customFetch = fetch;
+			}
+			const response = await customFetch(fetchUrl);
 			if (!response.ok) {
 				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 			}
@@ -47,6 +50,7 @@ export function createWindowSchemaConfig(): WindowSchemaConfig {
 
 	return {
 		getContent,
+		getPath: (url: string) => `/api/redirect?id=${url}`,
 		renderWindows: true,
 		isAllowedUrl: (urlOrId: string) => {
 			// Only allow document IDs (UUIDs) for security
