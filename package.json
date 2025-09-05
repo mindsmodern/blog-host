@@ -51,6 +51,7 @@
 		]
 	},
 	"dependencies": {
+		"@lucide/svelte": "^0.542.0",
 		"@mindsmodern/design-primitives": "^1.0.1",
 		"@mindsmodern/grid-editor": "0.4.4-beta.3",
 		"@supabase/ssr": "^0.6.1",
