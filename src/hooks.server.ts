@@ -1,8 +1,9 @@
 import { createServerClient } from '@supabase/ssr';
-import { type Handle, redirect } from '@sveltejs/kit';
+import { error, type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { BASE_URL } from '$env/static/private';
 
 const supabase: Handle = async ({ event, resolve }) => {
 	/**
@@ -78,4 +79,24 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(supabase, authGuard);
+const resolveDomain: Handle = async ({ event, resolve }) => {
+	const { url } = event;
+	let domain: string | null;
+
+	if (url.hostname === 'localhost') {
+		domain = 'modernpromenader';
+	} else if (url.hostname.endsWith(BASE_URL)) {
+		domain = url.hostname.split('.')[0] || null;
+	} else {
+		domain = null;
+	}
+
+	if (domain === null) {
+		error(404, 'Page not found');
+	}
+
+	event.locals.domain = domain;
+	return resolve(event);
+};
+
+export const handle: Handle = sequence(supabase, authGuard, resolveDomain);

@@ -1,28 +1,13 @@
 import { JSDOM } from 'jsdom';
 import { renderContent } from '@mindsmodern/grid-editor';
 import { supabaseAnon } from '$lib/server/supabase';
-import { BASE_URL } from '$env/static/private';
 import { UAParser } from 'ua-parser-js';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
 export const ssr = true;
 
-export const load: PageServerLoad = async ({ url, request, fetch }) => {
-	let domain: string | null;
-
-	if (url.hostname === 'localhost') {
-		domain = 'modernpromenader';
-	} else if (url.hostname.endsWith(BASE_URL)) {
-		domain = url.hostname.split('.')[0] || null;
-	} else {
-		domain = null;
-	}
-
-	if (domain === null) {
-		error(404, 'Page not found');
-	}
-
+export const load: PageServerLoad = async ({ url, request, fetch, locals: { domain } }) => {
 	const slug = url.pathname;
 
 	const type =
