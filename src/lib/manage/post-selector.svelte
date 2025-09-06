@@ -1,37 +1,16 @@
 <script module lang="ts">
-	export type ListElem = {
-		slug: string | null;
-	};
-
-	export type TreeNode<L extends ListElem> = {
-		id: string;
-		name: string;
-		elem?: L;
-		children: TreeNode<L>[];
-	};
-
-	function findName<L extends ListElem>(children: TreeNode<L>[], name: string): TreeNode<L> | null {
-		const res = children.filter((child) => child.name === name);
-		if (res.length) {
-			return res[0];
-		} else {
-			return null;
-		}
-	}
-
 	function listToTree<L extends ListElem>(list: L[], domain: string): TreeNode<L> {
-		list = list
+		const publishedList = list
 			.filter((value) => value.slug !== null)
 			.sort((a, b) => a.slug!.localeCompare(b.slug!));
 
-		let rootChildren: TreeNode<L>[] = [];
+		let root: TreeNode<L> = { name: 'root:', children: [], id: 'root:' };
 
-		let root: TreeNode<L> = { name: domain, children: rootChildren, id: 'domain' };
-
-		for (const elem of list) {
-			const chunks = (domain + elem.slug!).split('/').filter((value) => value.length);
-			let ptr = root;
-			let slug = '';
+		let publishedRoot: TreeNode<L> = { name: domain, children: [], id: 'pub:/' };
+		for (const elem of publishedList) {
+			const chunks = elem.slug!.split('/').filter((value) => value.length);
+			let ptr = publishedRoot;
+			let slug = 'pub:';
 			for (const chunk of chunks) {
 				slug += '/' + chunk;
 				let child = findName(ptr.children, chunk);
@@ -47,28 +26,55 @@
 			}
 			ptr.elem = elem;
 		}
-		const addNew = (node: TreeNode<L>) => {
-			node.children.push({ name: 'New Post', children: [], id: 'new:' + node.id });
-			for (const child of node.children) {
-				if (child.id.startsWith('new:')) {
-					continue;
-				}
-				addNew(child);
-			}
-		};
-		for (const child of root.children) {
-			addNew(child);
-		}
+		root.children.push(publishedRoot);
+		const unPublishedList = list
+			.filter((value) => value.slug === null)
+			.sort((a, b) => a.title.localeCompare(b.title));
+
+		root.children.push({
+			id: 'unpub:',
+			// TODO: i18n
+			name: 'Unpublished Articles',
+			children: unPublishedList.map((value) => {
+				return {
+					id: 'unpub:' + value.id,
+					name: value.title,
+					children: []
+				};
+			})
+		});
 
 		return root;
 	}
 
 	interface PostSelectorProps<L extends ListElem> {
 		data: L[];
-		slug?: string;
+		selectedValue?: string[];
+		expandedValue?: string[];
 		label?: string;
-		newPost: (slug: string) => void;
+		createPost: (slug: string) => void;
 		domain: string;
+	}
+
+	export function idGetType(id: string): 'root' | 'pub' | 'unpub' | 'new' {
+		if (id === 'root:') {
+			return 'root';
+		} else if (id.startsWith('unpub:')) {
+			return 'unpub';
+		} else if (id.startsWith('new:')) {
+			return 'new';
+		} else {
+			return 'pub';
+		}
+	}
+
+	export function idCheckPost(post: Post, id: string) {
+		switch (idGetType(id)) {
+			case 'unpub':
+				return post.id === id.replace('unpub:', '');
+			case 'pub':
+				return post.slug === id.replace('pub:', '');
+		}
 	}
 </script>
 
@@ -78,12 +84,15 @@
 
 	let {
 		data,
-		slug = $bindable(undefined),
+		selectedValue = $bindable([]),
+		expandedValue = $bindable([]),
 		label,
-		newPost,
+		createPost,
 		domain
 	}: PostSelectorProps<L> = $props();
-	const initialSlug = slug?.toString();
+
+	const defaultSelectedValue = $state.snapshot(selectedValue);
+	const defaultExpandedValue = $state.snapshot(expandedValue);
 
 	const rootNode = $derived(listToTree(data, domain));
 
@@ -97,30 +106,17 @@
 
 	const id = $props.id();
 	let service = $derived.by(() => {
-		let defaultSelectedValue: string[] | undefined = undefined;
-		let defaultExpandedValue: string[] | undefined = undefined;
-		if (initialSlug) {
-			defaultSelectedValue = [initialSlug];
-			defaultExpandedValue = [];
-			let fragment = '';
-			for (const chunk of initialSlug.split('/')) {
-				if (chunk === '') {
-					continue;
-				}
-				fragment += '/';
-				fragment += chunk;
-				defaultExpandedValue.push(fragment);
-			}
-		}
-
 		return useMachine(tree.machine, {
 			id,
 			collection,
-			onSelectionChange: (details) => {
-				slug = details.selectedNodes[0].id;
-			},
 			defaultSelectedValue,
-			defaultExpandedValue
+			defaultExpandedValue,
+			onExpandedChange(details) {
+				expandedValue = details.expandedValue;
+			},
+			onSelectionChange(details) {
+				selectedValue = details.selectedValue;
+			}
 		});
 	});
 
@@ -131,16 +127,8 @@
 	}
 
 	const api = $derived(tree.connect(service, normalizeProps));
-
-	$effect(() => {
-		if (slug?.startsWith('new:')) {
-			const currentSlug = slug.replace('new:', '');
-			newPost(currentSlug);
-			api.setSelectedValue([currentSlug]);
-		}
-	});
-
-	import { ChevronDown, ChevronRight, Plus } from '@lucide/svelte';
+	import { ChevronDown, ChevronRight, Plus, Squircle } from '@lucide/svelte';
+	import { findName, type ListElem, type Post, type TreeNode } from '.';
 </script>
 
 {#snippet treeNode(nodeProps: TreeNodeProps)}
@@ -171,7 +159,13 @@
 		</div>
 	{:else}
 		<div {...api.getItemProps({ indexPath, node })}>
-			<span class="indicator"><Plus strokeWidth={1.5} /></span>
+			<span class="indicator">
+				{#if node.children.length === 0}
+					<Squircle strokeWidth={1.5} />
+				{:else}
+					<Plus strokeWidth={1.5} />
+				{/if}
+			</span>
 			<div class="name">{node.name}</div>
 		</div>
 	{/if}
