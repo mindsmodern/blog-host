@@ -49,8 +49,7 @@
 
 	interface PostSelectorProps<L extends ListElem> {
 		data: L[];
-		selectedValue?: string[];
-		expandedValue?: string[];
+		path?: string;
 		label?: string;
 		createPost: (slug: string) => void;
 		domain: string;
@@ -76,6 +75,37 @@
 				return post.slug === id.replace('pub:', '');
 		}
 	}
+
+	function getParentPaths(selectedId: string): string[] {
+		const parentPaths = new Set<string>();
+
+		if (selectedId) {
+			const type = idGetType(selectedId);
+
+			if (type === 'pub') {
+				// For published posts like "pub:/path/to/post", expand all parent paths
+				const path = selectedId.replace('pub:', '');
+				const segments = path.split('/').filter(Boolean);
+
+				// Add root published path
+				parentPaths.add('pub:/');
+
+				// Add each parent path: pub:/path, pub:/path/to, etc.
+				for (let i = 1; i < segments.length; i++) {
+					const parentPath = 'pub:/' + segments.slice(0, i).join('/');
+					parentPaths.add(parentPath);
+				}
+			} else if (type === 'unpub') {
+				// For unpublished posts, expand the unpublished section
+				parentPaths.add('unpub:');
+			}
+
+			// Always expand root if we have a selection
+			parentPaths.add('root:');
+		}
+
+		return Array.from(parentPaths);
+	}
 </script>
 
 <script lang="ts" generics="L extends ListElem">
@@ -84,40 +114,67 @@
 
 	let {
 		data,
-		selectedValue = $bindable([]),
-		expandedValue = $bindable([]),
+		path = $bindable(''),
 		label,
 		createPost,
 		domain
 	}: PostSelectorProps<L> = $props();
 
-	const defaultSelectedValue = $state.snapshot(selectedValue);
-	const defaultExpandedValue = $state.snapshot(expandedValue);
-
 	const rootNode = $derived(listToTree(data, domain));
 
-	const collection = $derived(
+	let collection = $derived(
 		tree.collection<TreeNode<L>>({
-			nodeToValue: (node) => node.id.toString(),
+			nodeToValue: (node) => node.id,
 			nodeToString: (node) => node.name,
 			rootNode
 		})
 	);
+	import { untrack } from 'svelte';
 
 	const id = $props.id();
-	let service = $derived.by(() => {
-		return useMachine(tree.machine, {
-			id,
-			collection,
-			defaultSelectedValue,
-			defaultExpandedValue,
-			onExpandedChange(details) {
-				expandedValue = details.expandedValue;
-			},
-			onSelectionChange(details) {
-				selectedValue = details.selectedValue;
+
+	let service = useMachine(tree.machine, {
+		id: untrack(() => id),
+		collection: untrack(() => collection)
+	});
+
+	const api = $derived(tree.connect(service, normalizeProps));
+
+	// Initialize tree selection from path
+	$effect(() => {
+		if (path && api.selectedValue.length === 0) {
+			api.setSelectedValue([path]);
+			const expandedValue = getParentPaths(path);
+			api.setExpandedValue([...new Set([...api.expandedValue, ...expandedValue])]);
+		}
+	});
+
+	// Only sync path changes to tree when path is explicitly set from outside
+	let lastExternalPath = path;
+	$effect(() => {
+		if (path !== lastExternalPath) {
+			lastExternalPath = path;
+			if (path) {
+				api.setSelectedValue([path]);
+				const expandedValue = getParentPaths(path);
+				api.setExpandedValue([...new Set([...api.expandedValue, ...expandedValue])]);
+			} else {
+				api.setSelectedValue([]);
 			}
-		});
+		}
+	});
+
+	// Sync tree selection changes back to path (from user clicks)
+	$effect(() => {
+		const currentSelection = api.selectedValue[0] || '';
+		if (currentSelection !== path) {
+			path = currentSelection;
+			lastExternalPath = currentSelection;
+			if (currentSelection) {
+				const expandedValue = getParentPaths(currentSelection);
+				api.setExpandedValue([...new Set([...api.expandedValue, ...expandedValue])]);
+			}
+		}
 	});
 
 	interface TreeNodeProps {
@@ -125,8 +182,6 @@
 		indexPath: number[];
 		api: tree.Api;
 	}
-
-	const api = $derived(tree.connect(service, normalizeProps));
 	import { ChevronDown, ChevronRight, Plus, Squircle } from '@lucide/svelte';
 	import { findName, type ListElem, type Post, type TreeNode } from '.';
 </script>
