@@ -10,6 +10,7 @@ export interface Post {
 	meta_description: string | null;
 	theme_id: string | null;
 	domain_id: string;
+	documents: { id: string; tag: string | null }[];
 }
 
 export async function fetchUserPosts(supabase: SupabaseClient<Database>): Promise<Post[]> {
@@ -33,7 +34,8 @@ export async function fetchUserPosts(supabase: SupabaseClient<Database>): Promis
 			meta_description,
 			theme_id,
 			domain_id,
-			domains!inner(owner_id)
+			domains!inner(owner_id),
+			documents!inner(id, tag)
 		`
 		)
 		.eq('domains.owner_id', user.id)
@@ -62,7 +64,8 @@ export async function fetchDomainPosts(
 			meta_description,
 			theme_id,
 			domain_id,
-			domains!inner(domain_name)
+			domains!inner(domain_name),
+			documents!inner(id, tag)
 		`
 		)
 		.eq('domains.domain_name', domainName)
@@ -128,6 +131,16 @@ export interface SyncResult {
 	errors: string[];
 }
 
+export interface Document {
+	id: string;
+	post_id: string;
+	tag: string | null;
+	content: unknown;
+	width: number | null;
+	created_at: string;
+	updated_at: string;
+}
+
 function hasPostChanged(original: Post, current: Post): boolean {
 	return (
 		original.title !== current.title ||
@@ -139,12 +152,13 @@ function hasPostChanged(original: Post, current: Post): boolean {
 
 function getPostChanges(original: Post, current: Post): Partial<Post> {
 	const changes: Partial<Post> = {};
-	
+
 	if (original.title !== current.title) changes.title = current.title;
 	if (original.slug !== current.slug) changes.slug = current.slug;
-	if (original.meta_description !== current.meta_description) changes.meta_description = current.meta_description;
+	if (original.meta_description !== current.meta_description)
+		changes.meta_description = current.meta_description;
 	if (original.theme_id !== current.theme_id) changes.theme_id = current.theme_id;
-	
+
 	return changes;
 }
 
@@ -155,8 +169,8 @@ export function findPostDifferences(localPosts: Post[], originalPosts: Post[]): 
 
 	// Find updates and creates
 	for (const localPost of localPosts) {
-		const original = originalPosts.find(p => p.id === localPost.id);
-		
+		const original = originalPosts.find((p) => p.id === localPost.id);
+
 		if (!original) {
 			// New post (has ID but wasn't in original data)
 			creates.push({
@@ -176,12 +190,131 @@ export function findPostDifferences(localPosts: Post[], originalPosts: Post[]): 
 
 	// Find deletes
 	for (const originalPost of originalPosts) {
-		if (!localPosts.find(p => p.id === originalPost.id)) {
+		if (!localPosts.find((p) => p.id === originalPost.id)) {
 			deletes.push(originalPost.id);
 		}
 	}
 
 	return { updates, creates, deletes };
+}
+
+export async function createPost(
+	supabase: SupabaseClient<Database>,
+	domainName: string,
+	slug: string,
+	title: string = 'Untitled'
+): Promise<Post> {
+	const {
+		data: { user }
+	} = await supabase.auth.getUser();
+
+	if (!user) {
+		throw new Error('User not authenticated');
+	}
+
+	// Get domain ID
+	const { data: domain, error: domainError } = await supabase
+		.from('domains')
+		.select('id')
+		.eq('domain_name', domainName)
+		.eq('owner_id', user.id)
+		.single();
+
+	if (domainError || !domain) {
+		throw new Error('Domain not found or access denied');
+	}
+
+	// Create the post
+	const { data, error } = await supabase
+		.from('posts')
+		.insert({
+			title,
+			slug: slug === '' ? null : slug,
+			domain_id: domain.id,
+			meta_description: null,
+			theme_id: null
+		})
+		.select()
+		.single();
+
+	if (error) {
+		throw error;
+	}
+
+	return data as Post;
+}
+
+export async function fetchPostDocuments(
+	supabase: SupabaseClient<Database>,
+	postId: string
+): Promise<Document[]> {
+	const { data, error } = await supabase
+		.from('documents')
+		.select('*')
+		.eq('post_id', postId)
+		.order('created_at', { ascending: false });
+
+	if (error) {
+		throw error;
+	}
+
+	return data as Document[];
+}
+
+export async function createDocument(
+	supabase: SupabaseClient<Database>,
+	postId: string,
+	tag: string | null = null
+): Promise<Document> {
+	const { data, error } = await supabase
+		.from('documents')
+		.insert({
+			post_id: postId,
+			tag,
+			content: {
+				type: 'doc',
+				content: [
+					{
+						type: 'container',
+						content: [
+							{
+								type: 'cell',
+								attrs: {
+									color: 'foreground',
+									width: 'thicker',
+									background: 'background',
+									padding: 'normal',
+									height: null
+								},
+								content: [
+									{
+										type: 'textblock',
+										content: [
+											{
+												type: 'paragraph',
+												attrs: {
+													align: 'left',
+													size: 'medium'
+												}
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			width: null
+		})
+		.select()
+		.single();
+
+	if (error) {
+		throw error;
+	}
+
+	return data as Document;
 }
 
 export async function syncPosts(
