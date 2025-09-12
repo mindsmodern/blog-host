@@ -251,6 +251,15 @@ export type Database = {
         Args: { "": string }
         Returns: string
       }
+      sync_posts: {
+        Args: {
+          creates: Json
+          deletes: string[]
+          domain_name: string
+          updates: Json
+        }
+        Returns: Json
+      }
       user_owns_domain: {
         Args: { domain_uuid: string }
         Returns: boolean
