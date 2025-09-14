@@ -2,6 +2,7 @@
 	import theme from '@mindsmodern/design-primitives';
 	import type { PageProps } from './$types';
 	import { DimensionProvider, ThemeProvider } from '@mindsmodern/grid-editor';
+	import { relativizeTheme } from '$lib/theme';
 
 	let { data }: PageProps = $props();
 	let { title, content, width, description } = data.post;
@@ -12,7 +13,7 @@
 	<meta name="description" content={description} />
 </svelte:head>
 
-<ThemeProvider {theme}>
+<ThemeProvider theme={relativizeTheme(theme)}>
 	<DimensionProvider width={width || 32}
 		><div class="ProseMirror">{@html content}</div>
 	</DimensionProvider>
