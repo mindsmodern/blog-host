@@ -6,13 +6,13 @@
 	let {
 		data,
 		children,
-		content
+		control
 	}: {
 		data: {
 			supabase: SupabaseClient;
 		};
 		children?: Snippet;
-		content?: Snippet;
+		control?: Snippet;
 	} = $props();
 	let { supabase } = $derived(data);
 	const logout = async () => {
@@ -27,12 +27,12 @@
 	<header>
 		<nav>
 			<h2>White Chamber</h2>
-			{#if content}
-				<div class="content">
-					{@render content?.()}
+			{#if control}
+				<div class="control">
+					{@render control?.()}
 				</div>
 			{/if}
-			<div class="control">
+			<div>
 				<Button variant="tertiary" onclick={logout}>Logout</Button>
 			</div>
 		</nav>
@@ -46,23 +46,27 @@
 	@use '$lib/components/grid-helper.scss' as *;
 	@use '@mindsmodern/design-primitives/styles.scss' as *;
 
+	header {
+		user-select: none;
+	}
 	h2 {
 		font-weight: $typography-weight-semibold;
 		font-size: $typography-dimension-large-size;
 		line-height: $typography-dimension-large-height;
 		margin: 0;
 		letter-spacing: -0.03em;
-	}
-
-	h2,
-	.content {
 		padding: $size-layout-padding-condensed;
 		@include respond-to(sm) {
 			padding: $size-layout-padding-normal;
 		}
 	}
 
-	.content {
+	h2,
+	.control {
+		border-right: $size-layout-thickness-thick solid $palette-functional-border;
+	}
+
+	.control {
 		flex: 1;
 	}
 
