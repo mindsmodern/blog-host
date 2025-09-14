@@ -50,6 +50,7 @@
 		&:not(.fill) {
 			max-width: 100%;
 			width: fit-content;
+			height: fit-content;
 			border-radius: $size-control-radius-medium;
 		}
 
