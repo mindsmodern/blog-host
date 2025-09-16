@@ -15,8 +15,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       '@mindsmodern/grid-editor':
-        specifier: 0.4.4-beta.3
-        version: 0.4.4-beta.3(svelte@5.38.1)
+        specifier: 0.5.0
+        version: 0.5.0(svelte@5.38.1)
       '@supabase/ssr':
         specifier: ^0.6.1
         version: 0.6.1(@supabase/supabase-js@2.55.0)
@@ -423,8 +423,8 @@ packages:
   '@mindsmodern/design-primitives@1.0.1':
     resolution: {integrity: sha512-LEHJq49qKsMLJ4oaU9MunJV5nxqr3iA5ezigEj1Sc7lhFSaa35ilWJuaFSi0ivC+IimTF6kdeuMb1iKpnM5IeA==, tarball: https://npm.pkg.github.com/download/@mindsmodern/design-primitives/1.0.1/c24dc885b506ff93269e39cf7f3519e8eec6ffc8}
 
-  '@mindsmodern/grid-editor@0.4.4-beta.3':
-    resolution: {integrity: sha512-DDV4If7+MU8fUTZiRUP93eXISFr1UMOpjgye81M7TuX5mojzBYCpSPKlwhqV9pilDdNtmFOUqeiVt4/wb3TDOQ==, tarball: https://npm.pkg.github.com/download/@mindsmodern/grid-editor/0.4.4-beta.3/130b3a23835e3b7236027d97d5c498ead7893c75}
+  '@mindsmodern/grid-editor@0.5.0':
+    resolution: {integrity: sha512-6NL74SRLPTTooVfCzIqUS82J7ytoazwkyb1MvtbA7w7V3vvYkHD0k7Y0oGoKzbi5a69/FIu+ENXrWjK+t0AKiA==, tarball: https://npm.pkg.github.com/download/@mindsmodern/grid-editor/0.5.0/3181ddd74500b667dc1bceaf2a74cbb5eb376798}
     peerDependencies:
       svelte: ^5.0.0
 
@@ -2449,7 +2449,7 @@ snapshots:
 
   '@mindsmodern/design-primitives@1.0.1': {}
 
-  '@mindsmodern/grid-editor@0.4.4-beta.3(svelte@5.38.1)':
+  '@mindsmodern/grid-editor@0.5.0(svelte@5.38.1)':
     dependencies:
       '@floating-ui/dom': 1.7.4
       bezier-easing: 2.1.0
