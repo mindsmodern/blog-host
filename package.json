@@ -5,8 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "npm run db:generate-types && vite build",
-		"build:production": "npm run db:generate-types && vite build",
+		"build": "vite build",
 		"db:migrate": "npx supabase migrations up",
 		"db:generate-types": "npx supabase gen types --lang=typescript --local > src/lib/util/database.types.ts",
 		"preview": "vite preview",
