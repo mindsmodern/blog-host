@@ -6,10 +6,6 @@
 
 	let current = $state<((value: MediaSelectorAttrs | null) => void) | null>(null);
 	let selectedFile = $state<File | null>(null);
-	let mediaTitle = $state('');
-	let mediaWidth = $state<number | null>(null);
-	let mediaLeft = $state(0);
-	let mediaTop = $state(0);
 	let isUploading = $state(false);
 	let uploadError = $state('');
 
@@ -27,10 +23,6 @@
 				}
 				current = null;
 				selectedFile = null;
-				mediaTitle = '';
-				mediaWidth = null;
-				mediaLeft = 0;
-				mediaTop = 0;
 				uploadError = '';
 			};
 		});
@@ -41,10 +33,6 @@
 		const file = target.files?.[0];
 		if (file) {
 			selectedFile = file;
-			// Auto-populate title with filename if empty
-			if (!mediaTitle) {
-				mediaTitle = file.name.split('.')[0];
-			}
 		}
 	};
 
@@ -67,10 +55,10 @@
 
 			current({
 				id: result.handle,
-				title: mediaTitle || selectedFile.name,
-				width: mediaWidth,
-				left: mediaLeft,
-				top: mediaTop
+				title: selectedFile.name,
+				width: null,
+				left: 0,
+				top: 0
 			});
 		} catch (error) {
 			uploadError = error instanceof Error ? error.message : 'Upload failed';
@@ -104,51 +92,12 @@
 			</div>
 			<div class="controls">
 				<div class="control-group">
-					<label>Select File:</label>
 					<input
 						type="file"
 						accept="image/*,video/*"
 						onchange={handleFileSelect}
 						disabled={isUploading}
 					/>
-				</div>
-				{#if selectedFile}
-					<div class="control-group">
-						<label>File Info:</label>
-						<div class="file-info">
-							<p><strong>Name:</strong> {selectedFile.name}</p>
-							<p><strong>Type:</strong> {selectedFile.type}</p>
-							<p><strong>Size:</strong> {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
-						</div>
-					</div>
-				{/if}
-				<div class="control-group">
-					<label>Title (optional):</label>
-					<input
-						type="text"
-						bind:value={mediaTitle}
-						placeholder="Custom title..."
-						disabled={isUploading}
-					/>
-				</div>
-				<div class="control-group">
-					<label>Width (em, null for auto):</label>
-					<input
-						type="number"
-						bind:value={mediaWidth}
-						placeholder="null for auto-fit"
-						step="0.1"
-						min="0"
-						disabled={isUploading}
-					/>
-				</div>
-				<div class="control-group">
-					<label>Left offset (em):</label>
-					<input type="number" bind:value={mediaLeft} step="0.1" disabled={isUploading} />
-				</div>
-				<div class="control-group">
-					<label>Top offset (em):</label>
-					<input type="number" bind:value={mediaTop} step="0.1" disabled={isUploading} />
 				</div>
 			</div>
 			{#if uploadError}
