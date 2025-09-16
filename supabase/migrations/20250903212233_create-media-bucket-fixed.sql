@@ -36,6 +36,7 @@ CREATE POLICY "Public can read media" ON storage.objects
 FOR SELECT USING (bucket_id = 'media');
 
 -- RLS Policy: Users can manage their own media files
+-- Use path-based ownership (e.g., media/{user_id}/filename)
 CREATE POLICY "Users can manage their own media" ON storage.objects
 FOR ALL TO authenticated
-USING (bucket_id = 'media' AND auth.uid()::text = owner_id);
+USING (bucket_id = 'media' AND (storage.foldername(name))[1] = auth.uid()::text);
