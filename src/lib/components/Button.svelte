@@ -6,7 +6,6 @@
 		variant?: 'primary' | 'secondary' | 'tertiary';
 		size?: 'small' | 'medium' | 'large';
 		children?: Snippet;
-		class?: string;
 		fill?: boolean;
 	}
 
@@ -46,6 +45,7 @@
 		user-select: none;
 		width: 100%;
 		height: 100%;
+		box-sizing: border-box;
 
 		&:not(.fill) {
 			max-width: 100%;
@@ -108,17 +108,19 @@
 		}
 	}
 
-	.button--small {
-		font-size: $typography-dimension-small-size;
-		line-height: $typography-dimension-small-height;
-		padding: 0.1em 0.4em;
-	}
+	button:not(.fill) {
+		&.button--small {
+			font-size: $typography-dimension-small-size;
+			line-height: $typography-dimension-small-height;
+			padding: 0.1em 0.4em;
+		}
 
-	.button--medium {
-		padding: 0.3em 0.6em;
-	}
+		&.button--medium {
+			padding: 0.3em 0.6em;
+		}
 
-	.button--large {
-		padding: 0.6em 1.2em;
+		&.button--large {
+			padding: 0.6em 1.2em;
+		}
 	}
 </style>

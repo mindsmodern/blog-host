@@ -75,13 +75,11 @@
 		flex-direction: column;
 		width: 100%;
 		height: 100%;
-		border: $size-layout-thickness-thick solid $palette-functional-border;
-		border-left: none;
-		border-right: none;
 	}
 
 	header {
 		border-bottom: $size-layout-thickness-thick solid $palette-functional-border;
+		box-sizing: border-box;
 	}
 
 	nav {

@@ -4,7 +4,7 @@
 	import PostSelector, { idCheckPost, idGetType } from '$lib/manage/post-selector.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import type { PageProps } from './$types';
-	import StatusBar from './status-bar.svelte';
+	import StatusBar from '$lib/layout/status-bar.svelte';
 
 	let { data }: PageProps = $props();
 	let posts = $state<typeof data.posts>(JSON.parse(JSON.stringify(data.posts)));
