@@ -14,7 +14,6 @@
 			return null;
 		}
 		const res = posts.filter((value: any) => idCheckPost(value, path));
-		console.log(res);
 
 		if (res.length) {
 			return res[0];
@@ -127,13 +126,11 @@
 			updated_at: new Date().toISOString(),
 			meta_description: null,
 			theme_id: null,
-			domain_id: data.domain.id,
 			documents: []
 		};
 
 		// Add to local posts array (will get proper ID from sync)
-		const tempId = `temp-${Date.now()}`;
-		posts = [...posts, { ...newPost, id: tempId }];
+		posts = [...posts, { ...newPost }];
 
 		// Set path to select the new post
 		path = `pub:${slug}`;

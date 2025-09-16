@@ -35,7 +35,7 @@ export async function fetchUserPosts(supabase: SupabaseClient<Database>): Promis
 			theme_id,
 			domain_id,
 			domains!inner(owner_id),
-			documents!inner(id, tag)
+			documents!left(id, tag)
 		`
 		)
 		.eq('domains.owner_id', user.id)
@@ -65,7 +65,7 @@ export async function fetchDomainPosts(
 			theme_id,
 			domain_id,
 			domains!inner(domain_name),
-			documents!inner(id, tag)
+			documents!left(id, tag)
 		`
 		)
 		.eq('domains.domain_name', domainName)
