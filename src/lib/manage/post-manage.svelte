@@ -14,7 +14,10 @@
 		canSave = true,
 		isUnpublished = false,
 		slug = $bindable(post.slug),
-		title = $bindable(post.title)
+		title = $bindable(post.title),
+		createChildPost,
+		removePost,
+		duplicatePost
 	}: {
 		post: Post;
 		updatePost: (arg: { [key in keyof Partial<Post>]: unknown }) => void;
@@ -23,6 +26,9 @@
 		isUnpublished?: boolean;
 		slug?: string | null;
 		title?: string;
+		createChildPost?: () => void;
+		removePost?: () => void;
+		duplicatePost?: () => void;
 	} = $props();
 
 	let loading = $state(false);
@@ -75,6 +81,15 @@
 			<Button fill={false} variant="secondary" onclick={() => updatePost({ slug: null })}>
 				Unpublish
 			</Button>
+		{/if}
+		{#if createChildPost && !isUnpublished}
+			<Button fill={false} variant="secondary" onclick={createChildPost}>Create child post</Button>
+		{/if}
+		{#if duplicatePost}
+			<Button fill={false} variant="tertiary" onclick={duplicatePost}>Duplicate</Button>
+		{/if}
+		{#if removePost}
+			<Button fill={false} variant="tertiary" onclick={removePost}>Remove</Button>
 		{/if}
 	</div>
 

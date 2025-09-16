@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { type Post, syncPosts, type SyncResult } from '$lib/manage';
+	import { type Post, syncPosts, type SyncResult, createPost } from '$lib/manage';
 	import PostManage from '$lib/manage/post-manage.svelte';
 	import PostSelector, { idCheckPost, idGetType } from '$lib/manage/post-selector.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import type { PageProps } from './$types';
 	import StatusBar from '$lib/layout/status-bar.svelte';
+	import { invalidateAll } from '$app/navigation';
 
 	let { data }: PageProps = $props();
 	let posts = $state<typeof data.posts>(JSON.parse(JSON.stringify(data.posts)));
@@ -117,23 +118,14 @@
 		}
 	};
 
-	const createNewPost = async (slug: string) => {
-		// Create a new post with the specified slug
-		const newPost: Omit<Post, 'id'> & { id?: string } = {
-			title: 'New Post',
-			slug: slug,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			meta_description: null,
-			theme_id: null,
-			documents: []
-		};
+	const removePost = async (postToRemove: Post) => {
+		// Remove from local posts array
+		posts = posts.filter(p => p.id !== postToRemove.id);
 
-		// Add to local posts array (will get proper ID from sync)
-		posts = [...posts, { ...newPost }];
-
-		// Set path to select the new post
-		path = `pub:${slug}`;
+		// Clear selection if this was the selected post
+		if (post && post.id === postToRemove.id) {
+			path = 'pub:/';
+		}
 
 		// Sync to database
 		try {
@@ -143,6 +135,10 @@
 			if (result.success && result.conflicts.length === 0) {
 				syncStatus = 'success';
 				data.posts = JSON.parse(JSON.stringify(posts));
+
+				// Invalidate page data to ensure fresh data from server
+				await invalidateAll();
+
 				setTimeout(() => {
 					syncStatus = 'idle';
 					syncResult = null;
@@ -151,6 +147,99 @@
 				syncStatus = 'error';
 				syncResult = result;
 			}
+		} catch (error) {
+			console.error('Remove post failed:', error);
+			syncStatus = 'error';
+			syncResult = {
+				success: false,
+				conflicts: [],
+				errors: [error instanceof Error ? error.message : 'Unknown error']
+			};
+		}
+	};
+
+	const duplicatePost = async (postToDuplicate: Post) => {
+		// Create a duplicate with a new slug
+		const originalSlug = postToDuplicate.slug || '';
+		const basePath = originalSlug.includes('/') ? originalSlug.split('/').slice(0, -1).join('/') : '';
+		const postName = originalSlug.includes('/') ? originalSlug.split('/').pop() : originalSlug.replace('/', '');
+		const duplicateSlug = basePath ? `${basePath}/${postName}-copy` : `/${postName}-copy`;
+
+		// Check if duplicate slug already exists
+		const existingPost = posts.find(p => p.slug === duplicateSlug);
+		if (existingPost) {
+			// If duplicate exists, just select it
+			path = `pub:${duplicateSlug}`;
+			return;
+		}
+
+		try {
+			syncStatus = 'syncing';
+
+			// Create duplicate using the proper function that handles RLS
+			const duplicatedPost = await createPost(
+				data.supabase,
+				data.domain,
+				duplicateSlug,
+				`${postToDuplicate.title} (Copy)`
+			);
+
+			// Add documents array for local state consistency
+			const duplicatedPostWithDocs = { ...duplicatedPost, documents: [] };
+
+			// Add to local posts array
+			posts = [...posts, duplicatedPostWithDocs];
+			data.posts = [...data.posts, duplicatedPostWithDocs];
+
+			// Select the duplicated post
+			path = `pub:${duplicateSlug}`;
+
+			syncStatus = 'success';
+			setTimeout(() => {
+				syncStatus = 'idle';
+			}, 2000);
+
+		} catch (error) {
+			console.error('Duplicate post failed:', error);
+			syncStatus = 'error';
+			syncResult = {
+				success: false,
+				conflicts: [],
+				errors: [error instanceof Error ? error.message : 'Unknown error']
+			};
+		}
+	};
+
+	const createNewPost = async (slug: string) => {
+		// Check if a post already exists at this slug
+		const existingPost = posts.find((post) => post.slug === slug);
+		if (existingPost) {
+			// If post already exists, just select it instead of creating a new one
+			path = `pub:${slug}`;
+			return;
+		}
+
+		try {
+			syncStatus = 'syncing';
+
+			// Create post using the proper function that handles RLS
+			const newPost = await createPost(data.supabase, data.domain, slug, 'New Post');
+
+			// Add documents array for local state consistency
+			const newPostWithDocs = { ...newPost, documents: [] };
+
+			// Add to local posts array
+			posts = [...posts, newPostWithDocs];
+			data.posts = [...data.posts, newPostWithDocs];
+
+			// Set path to select the new post
+			path = `pub:${slug}`;
+
+			syncStatus = 'success';
+			setTimeout(() => {
+				syncStatus = 'idle';
+			}, 2000);
+
 		} catch (error) {
 			console.error('Create post failed:', error);
 			syncStatus = 'error';
@@ -171,7 +260,7 @@
 			<PostSelector
 				bind:path
 				domain={data.domain}
-				createPost={(slug) => alert(slug)}
+				createPost={(slug) => createNewPost(slug)}
 				data={posts}
 			/>
 		</div>
@@ -207,6 +296,12 @@
 						{isUnpublished}
 						bind:title={editingTitle}
 						bind:slug={editingSlug}
+						createChildPost={() => {
+							const childSlug = post.slug ? `${post.slug}/new-post` : '/new-post';
+							createNewPost(childSlug);
+						}}
+						removePost={() => removePost(post)}
+						duplicatePost={() => duplicatePost(post)}
 					/>
 				</div>
 			{:else if path && idGetType(path) === 'pub'}

@@ -135,10 +135,17 @@
 
 	let service = useMachine(tree.machine, {
 		id: untrack(() => id),
-		collection: untrack(() => collection)
+		get collection() {
+			return collection;
+		}
 	});
 
 	const api = $derived(tree.connect(service, normalizeProps));
+
+	// Update tree collection when data changes
+	$effect(() => {
+		service.send({ type: 'COLLECTION.SET', collection });
+	});
 
 	// Initialize tree selection from path
 	$effect(() => {

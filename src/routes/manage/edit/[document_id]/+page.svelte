@@ -24,12 +24,19 @@
 	let content = $state(data.document.content);
 
 	// Original values for tracking modifications
-	const originalTitle = data.post.title || 'Untitled';
-	const originalWidth = data.document.width || 32;
-	const originalContent = JSON.stringify(data.document.content);
+	let originalTitle = $state(data.post.title || 'Untitled');
+	let originalWidth = $state(data.document.width || 32);
+	let originalContent = $state(JSON.stringify(data.document.content));
 
 	// Save status tracking
 	let saveStatus = $state<'idle' | 'saving' | 'success' | 'error'>('idle');
+
+	// Update original values when data changes (e.g., after save)
+	$effect(() => {
+		originalTitle = data.post.title || 'Untitled';
+		originalWidth = data.document.width || 32;
+		originalContent = JSON.stringify(data.document.content);
+	});
 
 	// Track if any values have been modified
 	let hasModifications = $derived(
