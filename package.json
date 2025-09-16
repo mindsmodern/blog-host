@@ -53,7 +53,7 @@
 	"dependencies": {
 		"@lucide/svelte": "^0.542.0",
 		"@mindsmodern/design-primitives": "^1.0.1",
-		"@mindsmodern/grid-editor": "0.5.1",
+		"@mindsmodern/grid-editor": "0.5.3",
 		"@supabase/ssr": "^0.6.1",
 		"@supabase/supabase-js": "^2.55.0",
 		"@zag-js/number-input": "^1.24.1",
