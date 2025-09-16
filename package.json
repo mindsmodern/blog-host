@@ -5,9 +5,9 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "npm run db:login && npm run db:migrate && npm run db:generate-types && vite build",
-		"build:production": "npm run db:login && npm run db:migrate && npm run db:generate-types && vite build",
-		"db:login": "npx supabase login",
+		"build": "npm run db:link && npm run db:migrate && npm run db:generate-types && vite build",
+		"build:production": "npm run db:link && npm run db:migrate && npm run db:generate-types && vite build",
+		"db:link": "npx supabase login && npx supabase link --project-ref $(echo $SUPABASE_URL | sed 's|https://\\([^.]*\\)\\..*|\\1|')",
 		"db:migrate": "npx supabase migrations up",
 		"db:generate-types": "npx supabase gen types --lang=typescript --local > src/lib/util/database.types.ts",
 		"preview": "vite preview",
