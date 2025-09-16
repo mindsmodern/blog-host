@@ -98,7 +98,7 @@ When working with the posts table slug field:
 - Use transactions when updating slugs to avoid constraint violations
 - Remember that `slug IS NULL` means unpublished, `slug IS NOT NULL` means published
 - The deferred constraint allows slug swaps within a single transaction
-- Always validate slug format: `^[A-Za-z0-9-]+(?:/[A-Za-z0-9-]+)*$`
+- Always validate slug format: `^/?[A-Za-z0-9-]+(?:/[A-Za-z0-9-]+)*$` or just `/`
 
 Document queries should consider tagging strategy:
 

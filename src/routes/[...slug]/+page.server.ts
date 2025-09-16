@@ -4,6 +4,7 @@ import { supabaseAnon } from '$lib/server/supabase';
 import { UAParser } from 'ua-parser-js';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
+import { createMediaSchemaConfig } from '$lib/content/media';
 
 export const ssr = true;
 
@@ -101,11 +102,14 @@ export const load: PageServerLoad = async ({ url, request, fetch, locals: { doma
 	const doc = document.content as any; // Cast Json to ProseMirror Node type
 	// Render the document to HTML using the new renderContent API
 	const renderedHtml = await renderContent(doc, {
-		document: domDocument as unknown as Document,
-		renderWindows: true,
-		getContent: fetchContent,
-		getPath: (url: string) => `/api/redirect?id=${url}`,
-		isAllowedUrl: (urlOrId: string) => isValidUUID(urlOrId) // Only allow document IDs
+		window: {
+			document: domDocument as unknown as Document,
+			renderWindows: true,
+			getContent: fetchContent,
+			getPath: (url: string) => `/api/redirect?id=${url}`,
+			isAllowedUrl: (urlOrId: string) => isValidUUID(urlOrId) // Only allow document IDs
+		},
+		media: createMediaSchemaConfig()
 	});
 
 	return {

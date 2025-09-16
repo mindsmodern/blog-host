@@ -1,8 +1,9 @@
 import { JSDOM } from 'jsdom';
 import type { RequestHandler } from './$types';
-import { renderContent } from '@mindsmodern/grid-editor';
+import { renderContent, type WindowSchemaConfig } from '@mindsmodern/grid-editor';
 import { supabaseAnon } from '$lib/server/supabase';
 import { error } from '@sveltejs/kit';
+import { createMediaSchemaConfig } from '$lib/content/media';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const documentId = url.searchParams.get('id');
@@ -29,11 +30,16 @@ export const GET: RequestHandler = async ({ url }) => {
 	// Parse the document content (assuming it's a ProseMirror document)
 	const doc = document.content as any;
 
-	// Use renderContent to serialize to HTML
-	const html = await renderContent(doc, {
+	const windowConfig: WindowSchemaConfig = {
 		document: domDocument,
 		renderWindows: false,
 		isAllowedUrl: (url: string) => url.startsWith('/') || url.startsWith('http')
+	};
+
+	// Use renderContent to serialize to HTML with server-safe configs
+	const html = await renderContent(doc, {
+		window: windowConfig,
+		media: createMediaSchemaConfig()
 	});
 
 	return new Response(html, {
