@@ -9,7 +9,7 @@ export const contentWindowRenderer: WindowRenderer = async (documentId) => {
 	// Fetch document from database using shared anon client
 	const { data: document, error: docError } = await supabaseAnon
 		.from('documents')
-		.select('content')
+		.select('content, width')
 		.eq('id', documentId)
 		.single();
 
@@ -37,7 +37,7 @@ export const contentWindowRenderer: WindowRenderer = async (documentId) => {
 	});
 
 	return {
-		html,
+		html: `<div style="container-type: inline-size; font-size: calc(100cqw / ${document.width});">${html}</div>`,
 		headers: {
 			'Content-Type': 'text/html',
 			'Access-Control-Allow-Origin': '*',
