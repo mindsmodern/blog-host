@@ -17,6 +17,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		error(400, 'Media ID is required. Use ?id=your-media-id');
 	}
 
+	if (mediaId.startsWith('https://')) {
+		redirect(302, mediaId);
+	}
+
 	// Resolve the media URL using our existing function
 	const mediaResolution = resolveMediaUrl(mediaId, locals.supabase);
 

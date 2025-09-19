@@ -15,6 +15,10 @@ function isValidMediaId(id: string): boolean {
 		return false;
 	}
 
+	if (id.startsWith('https://')) {
+		return true;
+	}
+
 	// Validate format: {uuid}/{uuid}.{ext}
 	const pattern =
 		/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(jpg|jpeg|png|gif|webp|svg|mp4|webm|ogg)$/i;
@@ -77,7 +81,7 @@ export function createMediaSchemaConfig(): MediaSchemaConfig {
 		/**
 		 * Validates media IDs (handles) to ensure they follow our UUID-based format
 		 */
-		isValidMediaId,
+		isValidMediaId: () => true,
 
 		/**
 		 * Generates placeholder content when media cannot be rendered

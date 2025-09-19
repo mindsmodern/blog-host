@@ -58,6 +58,21 @@ export function resolveMediaUrl(
 		return null;
 	}
 
+	if (handle.startsWith('https://')) {
+		const extension = handle.split('.').pop() || '';
+		const mediaType = getMediaTypeFromExtension(extension);
+		const filename = getFilenameFromHandle(handle);
+
+		return {
+			src: handle,
+			type: mediaType,
+			metadata: {
+				filename: filename,
+				contentType: mediaType === 'video' ? `video/${extension}` : `image/${extension}`
+			}
+		};
+	}
+
 	try {
 		// Use Supabase's documented getPublicUrl method
 		const { data } = supabase.storage.from('media').getPublicUrl(handle);

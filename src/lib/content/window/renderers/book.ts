@@ -96,6 +96,32 @@ export const bookWindowRenderer: WindowRenderer = async (documentId) => {
 							attrs: {
 								color: 'foreground',
 								width: 'thicker',
+								height: null,
+								padding: 'normal',
+								background: 'background'
+							},
+							content: [
+								{
+									type: 'mediablock',
+									content: [
+										{
+											type: 'image',
+											attrs: {
+												id: bookDetail.image,
+												left: 0,
+												title: bookDetail.title,
+												width: null
+											}
+										}
+									]
+								}
+							]
+						},
+						{
+							type: 'cell',
+							attrs: {
+								color: 'background',
+								width: 'thicker',
 								background: 'background',
 								padding: 'normal',
 								height: null
@@ -106,8 +132,17 @@ export const bookWindowRenderer: WindowRenderer = async (documentId) => {
 									content: [
 										{
 											type: 'paragraph',
-											attrs: { align: 'left', size: 'large' },
-											content: [{ type: 'text', text: bookDetail.title }]
+											attrs: { align: 'left', size: 'medium' },
+											content: [
+												{ type: 'text', marks: [{ type: 'strong' }], text: bookDetail.title }
+											]
+										},
+										{
+											type: 'paragraph',
+											attrs: {
+												size: 'medium',
+												align: 'left'
+											}
 										},
 										{
 											type: 'paragraph',
@@ -133,7 +168,7 @@ export const bookWindowRenderer: WindowRenderer = async (documentId) => {
 		};
 
 		// Use renderContent to serialize to HTML
-		const html = await renderContent(doc.content, {
+		const html = await renderContent(doc, {
 			window: windowConfig,
 			media: createMediaSchemaConfig()
 		});
