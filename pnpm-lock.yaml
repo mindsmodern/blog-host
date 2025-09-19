@@ -32,6 +32,9 @@ importers:
       '@zag-js/tree-view':
         specifier: ^1.21.3
         version: 1.21.3
+      fast-xml-parser:
+        specifier: ^5.2.5
+        version: 5.2.5
       jsdom:
         specifier: ^26.1.0
         version: 26.1.0
