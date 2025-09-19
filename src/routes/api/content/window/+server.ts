@@ -1,16 +1,17 @@
-import { JSDOM } from 'jsdom';
 import type { RequestHandler } from './$types';
-import { renderContent, type WindowSchemaConfig } from '@mindsmodern/grid-editor';
 import { supabaseAnon } from '$lib/server/supabase';
 import { error } from '@sveltejs/kit';
-import { createMediaSchemaConfig } from '$lib/content/media';
+import { getWindowRenderer } from '$lib/content/window/registry';
 
 export const GET: RequestHandler = async ({ url }) => {
-	const documentId = url.searchParams.get('id');
+	const id = url.searchParams.get('id');
 
-	if (!documentId) {
-		throw error(400, 'Document ID is required');
+	if (!id) {
+		throw error(400, 'ID is required');
 	}
+
+	// Extract type from id (e.g., "content:123" -> type="content", documentId="123")
+	const [type, documentId] = id.includes(':') ? id.split(':', 2) : [null, id];
 
 	// Fetch document from database using shared anon client
 	const { data: document, error: docError } = await supabaseAnon
@@ -23,31 +24,22 @@ export const GET: RequestHandler = async ({ url }) => {
 		throw error(404, 'Document not found');
 	}
 
-	// Create JSDOM document for serialization
-	const dom = new JSDOM();
-	const domDocument = dom.window.document as unknown as Document;
+	// Get the appropriate renderer based on type
+	const renderer = getWindowRenderer(type);
 
-	// Parse the document content (assuming it's a ProseMirror document)
-	const doc = document.content as any;
+	if (!renderer) {
+		throw error(400, `Unknown type: ${type}`);
+	}
 
-	const windowConfig: WindowSchemaConfig = {
-		document: domDocument,
-		renderWindows: false,
-		isAllowedUrl: (url: string) => url.startsWith('/') || url.startsWith('http')
-	};
+	try {
+		// Render using the selected renderer
+		const result = await renderer({ documentId, document });
 
-	// Use renderContent to serialize to HTML with server-safe configs
-	const html = await renderContent(doc, {
-		window: windowConfig,
-		media: createMediaSchemaConfig()
-	});
-
-	return new Response(html, {
-		headers: {
-			'Content-Type': 'text/html',
-			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Methods': 'GET',
-			'Access-Control-Allow-Headers': 'Content-Type'
-		}
-	});
+		return new Response(result.html, {
+			headers: result.headers || {}
+		});
+	} catch (renderError) {
+		console.error('Render error:', renderError);
+		throw error(500, 'Failed to render content');
+	}
 };

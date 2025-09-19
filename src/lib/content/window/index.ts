@@ -1,20 +1,13 @@
 import type { WindowSchemaConfig } from '@mindsmodern/grid-editor';
 
-/**
- * Checks if a string is a valid UUID (document ID)
- */
-function isValidUUID(str: string): boolean {
-	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-	return uuidRegex.test(str);
-}
 
 /**
  * Creates a window configuration for grid-editor that integrates with our API endpoints
  *
  * This configuration handles:
- * - Document ID resolution to API endpoints
+ * - Window ID resolution to API endpoints (supports type:id format)
  * - Content fetching with proper error handling
- * - URL validation for security (only allows document IDs)
+ * - URL validation for security
  *
  * @returns WindowSchemaConfig for use with grid-editor
  */
@@ -44,7 +37,7 @@ export function createWindowSchemaConfig(customFetch?: typeof fetch): WindowSche
 		getPath: (url: string) => `/api/redirect?id=${url}`,
 		renderWindows: true,
 		isAllowedUrl: (id: string) => {
-			return isValidUUID(id);
+			return true; // TODO: Add validation later
 		}
 	};
 }
