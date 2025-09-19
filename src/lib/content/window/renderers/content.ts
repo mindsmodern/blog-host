@@ -2,8 +2,21 @@ import { JSDOM } from 'jsdom';
 import { renderContent, type WindowSchemaConfig } from '@mindsmodern/grid-editor';
 import { createMediaSchemaConfig } from '$lib/content/media';
 import type { WindowRenderer } from '../types';
+import { supabaseAnon } from '$lib/server/supabase';
+import { error } from '@sveltejs/kit';
 
-export const contentWindowRenderer: WindowRenderer = async ({ document }) => {
+export const contentWindowRenderer: WindowRenderer = async (documentId) => {
+	// Fetch document from database using shared anon client
+	const { data: document, error: docError } = await supabaseAnon
+		.from('documents')
+		.select('content')
+		.eq('id', documentId)
+		.single();
+
+	if (docError || !document) {
+		throw error(404, 'Document not found');
+	}
+
 	// Create JSDOM document for serialization
 	const dom = new JSDOM();
 	const domDocument = dom.window.document as unknown as Document;

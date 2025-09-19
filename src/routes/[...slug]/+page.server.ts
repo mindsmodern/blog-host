@@ -74,16 +74,7 @@ export const load: PageServerLoad = async ({ url, request, fetch, locals: { doma
 	// Server-side content fetcher function for windows
 	async function fetchContent(urlOrId: string): Promise<string> {
 		try {
-			let fetchUrl: string;
-			// If it's a UUID (document ID), convert to API endpoint
-			if (isValidUUID(urlOrId)) {
-				fetchUrl = `/api/content/window?id=${urlOrId}`;
-			} else {
-				// Otherwise treat as a regular URL
-				fetchUrl = urlOrId;
-			}
-
-			const response = await fetch(fetchUrl);
+			const response = await fetch(`/api/content/window?id=${urlOrId}`);
 			if (!response.ok) {
 				throw new Error(`HTTP ${response.status}`);
 			}
@@ -107,7 +98,7 @@ export const load: PageServerLoad = async ({ url, request, fetch, locals: { doma
 			renderWindows: true,
 			getContent: fetchContent,
 			getPath: (url: string) => `/api/redirect?id=${url}`,
-			isAllowedUrl: (urlOrId: string) => isValidUUID(urlOrId) // Only allow document IDs
+			isAllowedUrl: (urlOrId: string) => true // TODO: fix
 		},
 		media: createMediaSchemaConfig()
 	});

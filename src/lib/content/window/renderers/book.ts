@@ -1,8 +1,11 @@
 import { NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from '$env/static/private';
 import { XMLParser } from 'fast-xml-parser';
 import type { WindowRenderer } from '../types';
+import { createMediaSchemaConfig } from '$lib/content/media';
+import { renderContent, type WindowSchemaConfig } from '@mindsmodern/grid-editor';
+import { JSDOM } from 'jsdom';
 
-export const bookWindowRenderer: WindowRenderer = async ({ documentId }) => {
+export const bookWindowRenderer: WindowRenderer = async (documentId) => {
 	const isbn = documentId;
 
 	if (!isbn) {
@@ -82,12 +85,58 @@ export const bookWindowRenderer: WindowRenderer = async ({ documentId }) => {
 		};
 
 		// Generate only the content div with inline styles using design tokens
-		const html = `
-			<div style="font-size: calc(100cqw / 20); display: flex; flex-direction: column; gap: var(--mmdp-size-layout-gap-normal); align-items: center; width: 100%;">
-				<img src="${bookDetail.image}" alt="${bookDetail.title}" style="padding: 0 var(--mmdp-size-layout-gap-normal); display: block; width: 100%; height: auto;" />
-				<p>${bookDetail.title}</p>
-			</div>
-		`;
+		const doc = {
+			type: 'doc',
+			content: [
+				{
+					type: 'container',
+					content: [
+						{
+							type: 'cell',
+							attrs: {
+								color: 'foreground',
+								width: 'thicker',
+								background: 'background',
+								padding: 'normal',
+								height: null
+							},
+							content: [
+								{
+									type: 'textblock',
+									content: [
+										{
+											type: 'paragraph',
+											attrs: { align: 'left', size: 'large' },
+											content: [{ type: 'text', text: bookDetail.title }]
+										},
+										{
+											type: 'paragraph',
+											attrs: { align: 'left', size: 'medium' },
+											content: [{ type: 'text', text: bookDetail.author }]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		};
+
+		const dom = new JSDOM();
+		const domDocument = dom.window.document as unknown as Document;
+
+		const windowConfig: WindowSchemaConfig = {
+			document: domDocument,
+			renderWindows: false,
+			isAllowedUrl: (url: string) => url.startsWith('/') || url.startsWith('http')
+		};
+
+		// Use renderContent to serialize to HTML
+		const html = await renderContent(doc.content, {
+			window: windowConfig,
+			media: createMediaSchemaConfig()
+		});
 
 		return {
 			html,

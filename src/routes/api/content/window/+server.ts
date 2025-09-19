@@ -13,17 +13,6 @@ export const GET: RequestHandler = async ({ url }) => {
 	// Extract type from id (e.g., "content:123" -> type="content", documentId="123")
 	const [type, documentId] = id.includes(':') ? id.split(':', 2) : [null, id];
 
-	// Fetch document from database using shared anon client
-	const { data: document, error: docError } = await supabaseAnon
-		.from('documents')
-		.select('content')
-		.eq('id', documentId)
-		.single();
-
-	if (docError || !document) {
-		throw error(404, 'Document not found');
-	}
-
 	// Get the appropriate renderer based on type
 	const renderer = getWindowRenderer(type);
 
@@ -33,7 +22,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	try {
 		// Render using the selected renderer
-		const result = await renderer({ documentId, document });
+		const result = await renderer(documentId);
 
 		return new Response(result.html, {
 			headers: result.headers || {}
