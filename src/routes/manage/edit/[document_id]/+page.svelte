@@ -24,25 +24,16 @@
 	let content = $state(data.document.content);
 
 	// Original values for tracking modifications
-	let originalTitle = $state(data.post.title || 'Untitled');
-	let originalWidth = $state(data.document.width || 32);
-	let originalContent = $state(JSON.stringify(data.document.content));
+	let originalTitle = $state(title);
+	let originalWidth = $state(width);
+	let originalContent = $state(content);
 
 	// Save status tracking
 	let saveStatus = $state<'idle' | 'saving' | 'success' | 'error'>('idle');
 
-	// Update original values when data changes (e.g., after save)
-	$effect(() => {
-		originalTitle = data.post.title || 'Untitled';
-		originalWidth = data.document.width || 32;
-		originalContent = JSON.stringify(data.document.content);
-	});
-
 	// Track if any values have been modified
 	let hasModifications = $derived(
-		title !== originalTitle ||
-			width !== originalWidth ||
-			JSON.stringify(content) !== originalContent
+		title !== originalTitle || width !== originalWidth || content !== originalContent
 	);
 
 	const handleSave = async () => {
@@ -82,6 +73,10 @@
 			if (errors.length > 0) {
 				throw new Error(errors.map((e) => e.error!.message).join(', '));
 			}
+
+			originalContent = content;
+			originalTitle = title;
+			originalWidth = width;
 
 			saveStatus = 'success';
 
